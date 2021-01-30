@@ -17,7 +17,7 @@ void showMatrix(float **matrix, int size){
             cout << matrix[i][j];
             cout << "\t";
         }
-        cout << "\n";
+        cout << "\n"; 
     }
 }
 
