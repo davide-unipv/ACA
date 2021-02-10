@@ -8,12 +8,8 @@
 
 using namespace std;
 
-
-//#define THREADNUMB 1
-
 #define MAXNUMBER 100
 #define MINNUMBER 0
-
 
 void showMatrix(float **matrix, int size){
     cout << "\n";
@@ -27,12 +23,8 @@ void showMatrix(float **matrix, int size){
 }
 
 void create_Matrix (float **random, int size){
-    
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
-    //srand(static_cast<unsigned>(time(0))); 
-   
-  
         for(i = 0; i <size; i++)
             for(j = 0; j< size; j++)
                 random[i][j] = rand() %(range);
@@ -42,20 +34,17 @@ void create_Matrix (float **random, int size){
 void multiply(float **a, float **b, float **r, int size){
     //the program will work only on square matrices
     //multiply a*b
-    #pragma omp parallel for collapse(2) // because 3 has some dependances that will create a wrong result
+    #pragma omp parallel for collapse(3)
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
                 for(int k = 0; k < size; k++)
                     r[i][j] = r[i][j] + a[i][k]*b[k][j];
-   // showMatrix(results);
 }
 
 double execution (int size, int threads){
-
     omp_set_num_threads(threads);
 	srand(time(NULL));
     int i,j;
-	//float a[size][size], b[size][size], at[size][size], bt[size][size];
     float **a = (float **)malloc(size * sizeof(float*));
     float **b = (float **)malloc(size * sizeof(float*));
     float **r = (float **)malloc(size * sizeof(float*));
@@ -70,19 +59,26 @@ double execution (int size, int threads){
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
                 r[i][j] = 0;
-    
-    
-    create_Matrix(a, size);
-    //cout << "\nMatrix A:\n";
-    //showMatrix(a, size);
-    create_Matrix(b, size);
-    //cout << "\nMatrix B:\n";
-    //showMatrix(b, size);
-    //cout << "\n\nA * B =\n";
+                
+    #pragma omp sections
+	{
+		#pragma omp section 
+		create_Matrix(a, size);
+		
+		#pragma omp section 
+		create_Matrix(b, size);
+	}
+
+    cout << "\nMatrix A:\n";
+    showMatrix(a, size);
+    //create_Matrix(b, size);
+    cout << "\nMatrix B:\n";
+    showMatrix(b, size);
+    cout << "\n\nA * B =\n";
     double time= omp_get_wtime();
     multiply(a,b,r, size);
     time = omp_get_wtime()-time;
-    //showMatrix(r, size);
+    showMatrix(r, size);
     //cout << "\nExecution time: "<< time;
     free(a);
     free(b);
@@ -116,7 +112,7 @@ int main(){
 		}
 	}
 	outfile.close();*/
-	execution(6, 8);
+	execution(3, 1);
 	return 0;
 }
 
