@@ -35,7 +35,7 @@ void create_Matrix (float **random, int size){
 
 void lu(float **a, float **l, float **u, int size){
     int i = 0, j = 0, k = 0;
-    
+    #pragma omp parallel for
     for (k = 0; k < size; k++){
         for (i = k+1; i < size; i++){
                 l[i][k] = u[i][k] / u[k][k];
@@ -48,7 +48,7 @@ void lu(float **a, float **l, float **u, int size){
 
 void pivoting(float **a, float **p, int size){
     bool flag=false;
-    //#pragma omp parallel for //performance decreases because of the memory conflict that if not managed produces a wrong output
+    #pragma omp parallel for // le iterazioni sono indipendenti tra di loro, quindi posso parallelizzare
     for (int k = 0; k < size-1; k++){   
         int imax = 0;
         //foreach column i need to find which row has the maximum (in module) value
@@ -118,7 +118,7 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p, int siz
      * 
      */
 
-    //i can only parallelize this, so i can do each column indipendentily
+    //i can do each column indipendentily
     #pragma omp parallel for 
     for(int i=0; i< size; i++){
         float* y = new float[size](); //vettore di puntatori tutto a 0. è di volta in volta la colonna che modifichiamo
@@ -288,6 +288,6 @@ int main(int argc,char **argv){
     }
 	outfile.close();
 	*/
-	execution(4, 1);
+	execution(3, 1);
     return 0;
 }
