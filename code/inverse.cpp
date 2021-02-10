@@ -72,34 +72,22 @@ void pivoting(float **a, float **p, int size){
 }
 
 void forwardSubst(float **l, float **p,int column, float *y, int size){
-  	int i,j;
-  	float s;
-  	for(i = 0; i < size; i++) {
-        s = 0;
-        for(j = 0; j < size; j++) {
-            s = s + l[i][ j] * y[j];
-        }
-        y[i] = ( p[i][column] - s) / l[i][ i];
-   }
-}
-	  
-
-	/*  
-	  //p=b e y=d
-    cout<< "\nForward colonna:"<<column<<"\n";
-
-	y[0] = p[0][column] / l[0][0];
-    for(int i = 1; i< size; i++){
+  	cout<< "\nForward colonna:"<<column<<"\n";
+	//y[0] = p[0][column] / l[0][0];
+	cout<< "\n00 :"<<y[0]<<"\n";
+	float sum=0;
+    for(int i = 0; i< size; i++){
+    	
         //y[i] = p[i][column];
         //cout <<"\ni: "<<i;
         for (int j = 0; j < i; j++){
-            cout<<"\tj: "<<j;
             //the P[i] part has been done before
-            y[i] = p[i][column] - l[i][j]*y[j] ;
+            sum = sum + l[i][j]*y[j] ;
         }
-        y[i] = y[i]/l[i][i];
+        y[i] = (p[i][column]-sum)/l[i][i];
+        sum=0;
     }
-}*/
+}
 
 void backwardSubst(float **u, float *y, float **a1, int column, int size){
     /**
@@ -108,17 +96,20 @@ void backwardSubst(float **u, float *y, float **a1, int column, int size){
     //a1[size-1][column] = y[size-1]/u[size-1][size-1];
     //cout<< "\ncolumn "<<column<<"\nA1 "<<a1[size-1][column];
     //cout<< "\nColumn:"<<column;
-    a1[size-1][column] = y[size-1] / u[size-1][size-1];
+    float sum;
+    a1[size-1][column]=y[size-1]/ u[size-1][size-1];
     for(int i= size-2; i >= 0; i--){
         //a1[i][column] = y[i];
         //cout <<"\ni: "<<i;
-
+		sum=y[i];
         for (int j = size-1; j > i; j--)
         {
             //cout<<"\tj: "<<j;
-            a1[i][column] = a1[i][column] - u[i][j]*a1[j][column] ;
+           sum = sum- u[i][j]*a1[j][column] ;
         }
-        a1[i][column] = a1[i][column]/u[i][i]; 
+        
+        a1[i][column] = sum/u[i][i]; 
+        sum=0;
     }
 }
 
@@ -297,6 +288,6 @@ int main(int argc,char **argv){
     }
 	outfile.close();
 	*/
-	execution(3, 1);
+	execution(4, 1);
     return 0;
 }
