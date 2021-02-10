@@ -31,6 +31,17 @@ void create_Matrix (float **random, int size){
 
 }
 
+int conta_zeri(float **matrix, int size){
+	int n=0;
+	for(int i=0; i <size;i++ ){
+        for(int j=0; j< size; j++){
+        	if(matrix[i][j]==0) n++;
+		}
+	}
+	return n;
+}
+
+
 void multiply(float **a, float **b, float **r, int size){
     //the program will work only on square matrices
     //multiply a*b
@@ -44,10 +55,11 @@ void multiply(float **a, float **b, float **r, int size){
 double execution (int size, int threads){
     omp_set_num_threads(threads);
 	srand(time(NULL));
-    int i,j;
+    int i,j, za, zb;
     float **a = (float **)malloc(size * sizeof(float*));
     float **b = (float **)malloc(size * sizeof(float*));
     float **r = (float **)malloc(size * sizeof(float*));
+    double time=0;
     
     #pragma omp parallel for
     for(int i = 0; i < size; i++){
@@ -68,17 +80,23 @@ double execution (int size, int threads){
 		#pragma omp section 
 		create_Matrix(b, size);
 	}
-
-    cout << "\nMatrix A:\n";
+	za=conta_zeri(a, size);
+	zb=conta_zeri(b, size);
+	int ntot=size*size;
+	
+	cout<<"\nNumero zeri di A: "<<za<<"\tNumero totale elementi di A: "<<ntot<<endl;
+	cout<<"Numero zeri di B: "<<zb<<"\tNumero totale elementi di B: "<<ntot<<endl;
+	
+   /* cout << "\nMatrix A:\n";
     showMatrix(a, size);
     //create_Matrix(b, size);
     cout << "\nMatrix B:\n";
     showMatrix(b, size);
     cout << "\n\nA * B =\n";
-    double time= omp_get_wtime();
+    showMatrix(r, size);*/
+    time=omp_get_wtime();
     multiply(a,b,r, size);
     time = omp_get_wtime()-time;
-    showMatrix(r, size);
     //cout << "\nExecution time: "<< time;
     free(a);
     free(b);
@@ -88,31 +106,27 @@ double execution (int size, int threads){
 
 int main(){
 
-	/*int dimension[] = { 2000,4000,6000,8000,10000,20000 };
-	int threadcount[] = { 1,2,4,6,8,12,24 };
+	int dimension[] = { 500,1000,1500,2000,2500,3000 };
+	int threadcount[] = { 1,2,4,6,8 };
 	double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_multiplication.txt");
-	//int size = atoi(argv[1]);
-	for (int i = 0; i < 7; i++)
+
+	for (int i = 0; i < sizeof(threadcount)/sizeof(threadcount[0]); i++)
 	{
-		cout << "\n\nThreads: " << threadcount[i] << "\nSize:\tTime AVG:\n";
-		outfile <<"\n\nThreads: " << threadcount[i] << "\nSize:\tTime AVG:\n";
-		for (int j = 0; j < 6; j++)
+		cout <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
+		outfile <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
+		for (int j = 0; j < sizeof(dimension)/sizeof(dimension[0]); j++)
 		{
-			avgtime = 0; //reinitilize it
-			cout << dimension[j] << "\t";
-			outfile << dimension[j] << "\t";
-			//for (int k = 1; k <= 5; k++) {
-			avgtime = execution(dimension[j], threadcount[i]); //avgtime + execution(dimension[j], threadcount[i]);
-			//}
-			//avgtime = avgtime / 5.0F;
-			cout << avgtime << "\n";
-			outfile << avgtime << "\n";
+			avgtime = 0; 
+			cout <<"\nDimension: "<< dimension[j];
+			outfile <<"\nDimension: "<< dimension[j];
+			avgtime = execution(dimension[j], threadcount[i]); 
+			cout<<"\nTime: "<<avgtime<<"\n";
+			outfile<<"\nTime: "<<avgtime<<"\n";
 		}
 	}
-	outfile.close();*/
-	execution(3, 1);
+	outfile.close();
 	return 0;
 }
 
