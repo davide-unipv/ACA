@@ -13,7 +13,8 @@ using namespace std;
 
 #define MAXNUMBER 100
 #define MINNUMBER 0
- 
+
+
 void showMatrix(float **matrix, int size){
     cout << "\n";
     for(int i=0; i <size;i++ ){
@@ -29,8 +30,9 @@ void create_Matrix (float **random, int size){
     
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
-    srand(static_cast<unsigned>(time(0))); 
-    //srand(time(NULL));
+    //srand(static_cast<unsigned>(time(0))); 
+   
+  
         for(i = 0; i <size; i++)
             for(j = 0; j< size; j++)
                 random[i][j] = rand() %(range);
@@ -45,13 +47,13 @@ void multiply(float **a, float **b, float **r, int size){
             for(int j = 0; j < size; j++)
                 for(int k = 0; k < size; k++)
                     r[i][j] = r[i][j] + a[i][k]*b[k][j];
-    //showMatrix(results);
+   // showMatrix(results);
 }
 
 double execution (int size, int threads){
 
     omp_set_num_threads(threads);
-
+	srand(time(NULL));
     int i,j;
 	//float a[size][size], b[size][size], at[size][size], bt[size][size];
     float **a = (float **)malloc(size * sizeof(float*));
@@ -72,14 +74,15 @@ double execution (int size, int threads){
     
     create_Matrix(a, size);
     //cout << "\nMatrix A:\n";
-    //showMatrix(a);
+    //showMatrix(a, size);
     create_Matrix(b, size);
     //cout << "\nMatrix B:\n";
-    //showMatrix(b);
+    //showMatrix(b, size);
     //cout << "\n\nA * B =\n";
     double time= omp_get_wtime();
     multiply(a,b,r, size);
     time = omp_get_wtime()-time;
+    //showMatrix(r, size);
     //cout << "\nExecution time: "<< time;
     free(a);
     free(b);
@@ -89,7 +92,7 @@ double execution (int size, int threads){
 
 int main(){
 
-	int dimension[] = { 2000,4000,6000,8000,10000,20000 };
+	/*int dimension[] = { 2000,4000,6000,8000,10000,20000 };
 	int threadcount[] = { 1,2,4,6,8,12,24 };
 	double avgtime;
 	ofstream outfile;
@@ -112,7 +115,8 @@ int main(){
 			outfile << avgtime << "\n";
 		}
 	}
-	outfile.close();
+	outfile.close();*/
+	execution(6, 8);
 	return 0;
 }
 
