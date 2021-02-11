@@ -59,13 +59,11 @@ void pivoting(float **a, float **p, int size){
             }
         }
         if(flag){
-		//cout <<"\nSwapping row "<<k << "and "<< imax;
-        swap(a[k],a[imax]);
-        swap(p[k],p[imax]);
-        flag=false;
+			//cout <<"\nSwapping row "<<k << "and "<< imax;
+        	swap(a[k],a[imax]);
+        	swap(p[k],p[imax]);
+        	flag=false;
     	}
-        //now i swap the row imax and k
-        
 	}
 }
 
@@ -163,23 +161,18 @@ double execution (int size,int threadcount){
             for(int j = 0; j < size; j++) {
                 a1[i][j] = 0;
                 r[i][j] = 0;
-
                 if (i != j) {
                     p[i][j] = 0;
                 }
             }
         }
-
-    
-    
+        
     create_Matrix(a,size);
     //cout << "\nMatrix A:\n";
     //showMatrix(a, size);
     //cout << "\nPivoting matrix:\n";
     //showMatrix(p,size);
-    
-	
-	
+
 	double time= omp_get_wtime();
     #pragma omp parallel for   
     for (i = 0; i < size; i++) {
@@ -191,21 +184,18 @@ double execution (int size,int threadcount){
                 l[i][j] = 0;
         }
     }
-    /**
-     * P*a = l*u and LUx =p
-     * where p is the column to pivot of the b matrix and x is a column of the inverse
-    */
     //cout << "\nPivoting....\n";
     pivoting(a_p,p,size);
     #pragma omp parallel for
     for (i = 0; i < size; i++)
         for (j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
+            
     //cout << "\nMatrix A pivottata:\n";
     //showMatrix(a_p, size);
     //cout << "\nPivoting matrix:\n";
     //showMatrix(p, size);
-    lu(a_p,l,u,size);
+    lu(a_p,l,u,size); //come u posso passargli a_p
     /* TEST LU
     cout << "\nL matrix:\n";
     showMatrix(l, size);
@@ -241,29 +231,25 @@ double execution (int size,int threadcount){
 }
 
 int main(int argc,char **argv){
-        
-
     int dimension[] = { 500,1000,1500,2000,2500,3000 };
 	int threadcount[] = { 5,6,8 };
     double avgtime;
-	//ofstream outfile;
-	//outfile.open("Test_results_inverse.txt");
+	ofstream outfile;
+	outfile.open("Test_results_inverse.txt");
     for (int i = 0; i < sizeof(threadcount)/sizeof(threadcount[0]); i++)
 	{
 		cout <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
-		//outfile <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
+		outfile <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
 		for (int j = 0; j < sizeof(dimension)/sizeof(dimension[0]); j++)
 		{
 			avgtime = 0; 
 			cout <<"\nDimension: "<< dimension[j];
-			//outfile <<"\nDimension: "<< dimension[j];
+			outfile <<"\nDimension: "<< dimension[j];
 			avgtime = execution(dimension[j], threadcount[i]); 
 			cout<<"\nTime: "<<avgtime<<"\n";
-			//outfile<<"\nTime: "<<avgtime<<"\n";
+			outfile<<"\nTime: "<<avgtime<<"\n";
 		}
 	}
-	//outfile.close();
-
-	
+	outfile.close();
     return 0;
 }

@@ -96,7 +96,7 @@ double execution (int size, int threads){
     showMatrix(r, size);*/
     time=omp_get_wtime();
     multiply(a,b,r, size);
-    time = omp_get_wtime()-time;
+    time=omp_get_wtime()-time;
     //cout << "\nExecution time: "<< time;
     free(a);
     free(b);
