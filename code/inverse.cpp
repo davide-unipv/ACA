@@ -32,7 +32,7 @@ void create_Matrix (float **random, int size){
 
 void lu(float **a, float **l, float **u, int size){
     //int i = 0, j = 0, k = 0; //danno problemi queste variabili condivise??
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int k = 0; k < size; k++){
         for (int i = k+1; i < size; i++){
                 l[i][k] = u[i][k] / u[k][k];
@@ -44,15 +44,15 @@ void lu(float **a, float **l, float **u, int size){
 }
 
 void pivoting(float **a, float **p, int size){
-    bool flag=false; //possibile problema di variabile condivisa
-    #pragma omp parallel for // le iterazioni sono indipendenti tra di loro, quindi posso parallelizzare
+    bool flag=false; 
+    //#pragma omp parallel for 
     
-	 for (int k = 0; k < size-1; k++){   
-        int imax = 0;
+	for (int k = 0; k < size-1; k++){   //k=colonna
+    	int imax = k;
         //foreach column i need to find which row has the maximum (in module) value
-        for (int j = k; j < size; j++){
+        for (int j = k; j < size; j++){ //j=riga
             //finding the maximum
-            if (abs(a[j][k]) > abs(a[imax][k])){
+            if (a[j][k] > a[imax][k]){
                 imax = j;
                 //cout <<"\n iMax = " <<imax<<"riga:"<<j<<" colonna:"<<k;
                 flag=true; 
@@ -167,9 +167,16 @@ double execution (int size,int threadcount){
             }
         }
         
+        //float ma[5][5]={41, 1 ,  28  ,    2  ,    34,7    ,   6   ,    2 ,      35,      31,5    ,   1   ,    47    ,  1   ,    38,47    ,  37   ,   18  ,    49  ,    37,22  ,    35   ,   28    ,  48      ,29};
+ /*    provare questa matrice con il pivoting:   
+41      1       28      2       34
+7       6       2       35      31
+5       1       47      1       38
+47      37      18      49      37
+22      35      28      48      29*/
     create_Matrix(a,size);
-    //cout << "\nMatrix A:\n";
-    //showMatrix(a, size);
+    cout << "\nMatrix A:\n";
+    showMatrix(a, size);
     //cout << "\nPivoting matrix:\n";
     //showMatrix(p,size);
 
@@ -184,15 +191,15 @@ double execution (int size,int threadcount){
                 l[i][j] = 0;
         }
     }
-    //cout << "\nPivoting....\n";
+    cout << "\nPivoting....\n";
     pivoting(a_p,p,size);
     #pragma omp parallel for
     for (i = 0; i < size; i++)
         for (j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
             
-    //cout << "\nMatrix A pivottata:\n";
-    //showMatrix(a_p, size);
+    cout << "\nMatrix A pivottata:\n";
+    showMatrix(a_p, size);
     //cout << "\nPivoting matrix:\n";
     //showMatrix(p, size);
     lu(a_p,l,u,size); //come u posso passargli a_p
@@ -231,8 +238,8 @@ double execution (int size,int threadcount){
 }
 
 int main(int argc,char **argv){
-    int dimension[] = { 500,1000,1500,2000,2500,3000 };
-	int threadcount[] = { 5,6,8 };
+    int dimension[] = { 5 };
+	int threadcount[] = { 5 };
     double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_inverse.txt");

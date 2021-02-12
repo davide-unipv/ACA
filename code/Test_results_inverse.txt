@@ -1,0 +1,6 @@
+
+
+Number of threads: 5
+
+Dimension: 5
+Time: 0
