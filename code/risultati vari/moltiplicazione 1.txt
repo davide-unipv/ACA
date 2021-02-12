@@ -1,105 +1,105 @@
-
+for collapse 3 scheduling statico
 
 Number of threads: 1
 
 Dimension: 500
-Time: 0.784
+Time: 0.812
 
 Dimension: 1000
-Time: 6.372
+Time: 7.128
 
 Dimension: 1500
-Time: 20.45
+Time: 30.024
 
 Dimension: 2000
-Time: 52.834
+Time: 39.262
 
 Dimension: 2500
-Time: 100.934
+Time: 29.416
 
 Dimension: 3000
-Time: 221.771
+Time: 35.933
 
 
 Number of threads: 2
 
 Dimension: 500
-Time: 0.654
+Time: 0.406
 
 Dimension: 1000
-Time: 5.156
+Time: 3.86
 
 Dimension: 1500
-Time: 15.51
+Time: 15.458
 
 Dimension: 2000
-Time: 41.498
+Time: 22.382
 
 Dimension: 2500
-Time: 80.82
+Time: 15.927
 
 Dimension: 3000
-Time: 148.005
+Time: 20.976
 
 
 Number of threads: 4
 
 Dimension: 500
-Time: 0.374
+Time: 0.266
 
 Dimension: 1000
-Time: 3.166
+Time: 2.642
 
 Dimension: 1500
-Time: 11.266
+Time: 10.253
 
 Dimension: 2000
-Time: 29.386
+Time: 15.223
 
 Dimension: 2500
-Time: 54.136
+Time: 11.034
 
 Dimension: 3000
-Time: 114.992
+Time: 13.27
 
 
 Number of threads: 6
 
 Dimension: 500
-Time: 0.364
+Time: 0.235
 
 Dimension: 1000
-Time: 2.922
+Time: 2.36
 
 Dimension: 1500
-Time: 10.146
+Time: 8.94
 
 Dimension: 2000
-Time: 26.341
+Time: 14.739
 
 Dimension: 2500
-Time: 49.852
+Time: 10.41
 
 Dimension: 3000
-Time: 131.946
+Time: 11.645
 
 
 Number of threads: 8
 
 Dimension: 500
-Time: 0.323
+Time: 0.235
 
 Dimension: 1000
-Time: 2.848
+Time: 2.345
 
 Dimension: 1500
-Time: 9.506
+Time: 9.004
 
 Dimension: 2000
-Time: 24.283
+Time: 17.27
 
 Dimension: 2500
-Time: 47.162
+Time: 11.238
 
 Dimension: 3000
-Time: 98.7
+Time: 10.957

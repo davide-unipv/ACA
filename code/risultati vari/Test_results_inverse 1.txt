@@ -1,3 +1,109 @@
+
+
+Number of threads: 1
+
+Dimension: 500
+Time: 0.771
+
+Dimension: 1000
+Time: 6.166
+
+Dimension: 1500
+Time: 20.084
+
+Dimension: 2000
+Time: 53.555
+
+Dimension: 2500
+Time: 101.237
+
+Dimension: 3000
+Time: 219.046
+
+
+Number of threads: 2
+
+Dimension: 500
+Time: 0.486
+
+Dimension: 1000
+Time: 3.959
+
+Dimension: 1500
+Time: 13.205
+
+Dimension: 2000
+Time: 34.506
+
+Dimension: 2500
+Time: 65.936
+
+Dimension: 3000
+Time: 150.881
+
+
+Number of threads: 4
+
+Dimension: 500
+Time: 0.391
+
+Dimension: 1000
+Time: 3.244
+
+Dimension: 1500
+Time: 11.366
+
+Dimension: 2000
+Time: 29.285
+
+Dimension: 2500
+Time: 53.952
+
+Dimension: 3000
+Time: 116.767
+
+
+Number of threads: 6
+
+Dimension: 500
+Time: 0.364
+
+Dimension: 1000
+Time: 2.925
+
+Dimension: 1500
+Time: 10.142
+
+Dimension: 2000
+Time: 26.39
+
+Dimension: 2500
+Time: 49.587
+
+Dimension: 3000
+Time: 132.214
+
+
+Number of threads: 8
+
+Dimension: 500
+Time: 0.363
+
+Dimension: 1000
+Time: 2.666
+
+Dimension: 1500
+Time: 8.94
+
+Dimension: 2000
+Time: 25.007
+
+Dimension: 2500
+Time: 45.646
+
+Dimension: 3000
+Time: 98.987
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -34,7 +140,7 @@ void lu(float **a, float **l, float **u, int size){
     for (int k = 0; k < size; k++){
         for (int i = k+1; i < size; i++){
                 l[i][k] = u[i][k] / u[k][k];
-                //#pragma omp parallel for //qui va ma non so perché
+                //#pragma omp parallel for //qui va ma non so perchÃ©
                 for (int j = k; j < size; j++){
                     u[i][j] = u[i][j] - l[i][k] * u[k][j];
                 }
@@ -47,7 +153,7 @@ void pivoting(float **a, float **p, int size){
     
 	for (int k = 0; k < size-1; k++){   //k=colonna
     	int imax = k;
-        #pragma omp parallel for  //divido le righe sui thread
+        //#pragma omp parallel for  //divido le righe sui thread
         for (int j = k; j < size; j++){ //j=riga
             if (a[j][k] > a[imax][k]){ //finding the index maximum
             //#pragma omp critical
@@ -112,10 +218,10 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p, int siz
     //i can do each column indipendentily
     #pragma omp parallel for 
     for(int i=0; i< size; i++){
-        float* y = new float[size](); //vettore di puntatori tutto a 0. è di volta in volta la colonna che modifichiamo
+        float* y = new float[size](); //vettore di puntatori tutto a 0. Ã¨ di volta in volta la colonna che modifichiamo
         forwardSubst(l,p,i,y,size); //dal sito: p=b e y=d
         backwardSubst(u,y,a1,i,size);
-        //a1 è l'inversa
+        //a1 Ã¨ l'inversa
     }
 
 }

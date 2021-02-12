@@ -1,3 +1,109 @@
+
+
+Number of threads: 1
+
+Dimension: 500
+Time: 0.784
+
+Dimension: 1000
+Time: 6.372
+
+Dimension: 1500
+Time: 20.45
+
+Dimension: 2000
+Time: 52.834
+
+Dimension: 2500
+Time: 100.934
+
+Dimension: 3000
+Time: 221.771
+
+
+Number of threads: 2
+
+Dimension: 500
+Time: 0.654
+
+Dimension: 1000
+Time: 5.156
+
+Dimension: 1500
+Time: 15.51
+
+Dimension: 2000
+Time: 41.498
+
+Dimension: 2500
+Time: 80.82
+
+Dimension: 3000
+Time: 148.005
+
+
+Number of threads: 4
+
+Dimension: 500
+Time: 0.374
+
+Dimension: 1000
+Time: 3.166
+
+Dimension: 1500
+Time: 11.266
+
+Dimension: 2000
+Time: 29.386
+
+Dimension: 2500
+Time: 54.136
+
+Dimension: 3000
+Time: 114.992
+
+
+Number of threads: 6
+
+Dimension: 500
+Time: 0.364
+
+Dimension: 1000
+Time: 2.922
+
+Dimension: 1500
+Time: 10.146
+
+Dimension: 2000
+Time: 26.341
+
+Dimension: 2500
+Time: 49.852
+
+Dimension: 3000
+Time: 131.946
+
+
+Number of threads: 8
+
+Dimension: 500
+Time: 0.323
+
+Dimension: 1000
+Time: 2.848
+
+Dimension: 1500
+Time: 9.506
+
+Dimension: 2000
+Time: 24.283
+
+Dimension: 2500
+Time: 47.162
+
+Dimension: 3000
+Time: 98.7
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -34,7 +140,7 @@ void lu(float **a, float **l, float **u, int size){
     for (int k = 0; k < size; k++){
         for (int i = k+1; i < size; i++){
                 l[i][k] = u[i][k] / u[k][k];
-                //#pragma omp parallel for //qui va ma non so perché
+                //#pragma omp parallel for //qui va ma non so perchÃ©
                 for (int j = k; j < size; j++){
                     u[i][j] = u[i][j] - l[i][k] * u[k][j];
                 }
@@ -112,10 +218,10 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p, int siz
     //i can do each column indipendentily
     #pragma omp parallel for 
     for(int i=0; i< size; i++){
-        float* y = new float[size](); //vettore di puntatori tutto a 0. è di volta in volta la colonna che modifichiamo
+        float* y = new float[size](); //vettore di puntatori tutto a 0. Ã¨ di volta in volta la colonna che modifichiamo
         forwardSubst(l,p,i,y,size); //dal sito: p=b e y=d
         backwardSubst(u,y,a1,i,size);
-        //a1 è l'inversa
+        //a1 Ã¨ l'inversa
     }
 
 }
