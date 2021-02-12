@@ -45,17 +45,17 @@ void lu(float **a, float **l, float **u, int size){
 
 void pivoting(float **a, float **p, int size){
     bool flag=false; 
-    //#pragma omp parallel for 
     
 	for (int k = 0; k < size-1; k++){   //k=colonna
     	int imax = k;
-        //foreach column i need to find which row has the maximum (in module) value
+        #pragma omp parallel for  //divido le righe sui thread
         for (int j = k; j < size; j++){ //j=riga
-            //finding the maximum
-            if (a[j][k] > a[imax][k]){
-                imax = j;
-                //cout <<"\n iMax = " <<imax<<"riga:"<<j<<" colonna:"<<k;
-                flag=true; 
+            if (a[j][k] > a[imax][k]){ //finding the index maximum
+            #pragma omp critical
+            	if (a[j][k] > a[imax][k]){ //compare a[j][k] and imax again because imax could have been changed by another thread after the comparison outside the critical section
+                	imax = j;
+                	flag=true; 
+                }
             }
         }
         if(flag){
