@@ -31,11 +31,10 @@ void create_Matrix (float **random, int size){
 }
 
 void lu(float **a, float **l, float **u, int size){
-    //int i = 0, j = 0, k = 0; //danno problemi queste variabili condivise??
-    //#pragma omp parallel for
     for (int k = 0; k < size; k++){
         for (int i = k+1; i < size; i++){
                 l[i][k] = u[i][k] / u[k][k];
+                #pragma omp parallel for //qui va ma non so perché
                 for (int j = k; j < size; j++){
                     u[i][j] = u[i][j] - l[i][k] * u[k][j];
                 }
@@ -129,7 +128,6 @@ void multiply(float **a, float **b, float **r, int size){
             for(int j = 0; j < size; j++)
                 for(int k = 0; k < size; k++)
                     r[i][j] = r[i][j] + a[i][k]*b[k][j];
-    //showMatrix(results);
 }
 
 double execution (int size,int threadcount){
@@ -198,10 +196,9 @@ double execution (int size,int threadcount){
         for (j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
             
-    cout << "\nMatrix A pivottata:\n";
-    showMatrix(a_p, size);
-    //cout << "\nPivoting matrix:\n";
-    //showMatrix(p, size);
+    /*cout << "\nMatrix A pivottata:\n";
+    showMatrix(a_p, size);*/
+    
     lu(a_p,l,u,size); //come u posso passargli a_p
     /* TEST LU
     cout << "\nL matrix:\n";
