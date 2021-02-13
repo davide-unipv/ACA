@@ -143,20 +143,72 @@ int conta_zeri(float **matrix, int size){
 	return n;
 }
 
-double execution (int size,int threadcount){
-    double time_setup= omp_get_wtime();
+double execution (float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p, int size,int threadcount){
 	omp_set_num_threads(threadcount);
+	
+	double time_exec= omp_get_wtime();
+	#pragma omp parallel for   
+    for (int i = 0; i < size; i++) {
+        l[i][i] = 1;
+        for (int j = 0; j < size; j++) {
+            a_p[i][j] = a[i][j];
 
-    int i, j;
-	float **a = (float **)malloc(size * sizeof(float*));
-    float **l = (float **)malloc(size * sizeof(float*));
-    float **u = (float **)malloc(size * sizeof(float*));
-    float **p = (float **)malloc(size * sizeof(float*));
-    float **r = (float **)malloc(size * sizeof(float*));
-    float **a1 = (float **)malloc(size * sizeof(float*));
-    float **a_p = (float **)malloc(size * sizeof(float*));
+            if (i != j)
+                l[i][j] = 0;
+        }
+    }
     
-    #pragma omp parallel for 
+    double pivot=omp_get_wtime();
+    //cout << "\nPivoting....\n";
+    pivoting(a_p,p,size);
+	pivot=omp_get_wtime()-pivot;
+	cout<<"\ntempo pivoting: "<<pivot; 
+	    
+    #pragma omp parallel for
+    for (int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++)
+            u[i][j] = a_p[i][j];
+    
+    /*cout << "\nMatrix A pivottata:\n";
+    showMatrix(a_p, size);*/
+    
+    double cavallo= omp_get_wtime();
+    lu(a_p,l,u,size); 
+	cavallo=omp_get_wtime()-cavallo;
+    cout<<"\ntempo lu: "<<cavallo;        
+    /* TEST LU
+    cout << "\nL matrix:\n";
+    showMatrix(l, size);
+    cout << "\nU matrix:\n";
+    showMatrix(u, size);
+    cout << "\nL*U=R";
+    multiply(l,u,r, size);
+    showMatrix(r, size);
+    */
+    
+   /**
+    * solving the system LUxi=Pi where i is the column and x is the column
+    * of the inverse to find
+    */
+    //cout << "\nFinding the inverse...";
+    double inv= omp_get_wtime();
+    findInverse(a_p,a1,l,u,p,size);
+    
+    //cout<< "\nMatrix a^-1:\n";
+    //showMatrix(a1, size);
+	inv=omp_get_wtime()-inv;
+    time_exec = omp_get_wtime()-time_exec;
+    cout << "\nTempo inversa: "<< inv;
+    //cout << "\nExecution time: "<< time << "\n\n";
+    /*multiply(a,a1,r, size);
+    showMatrix(r, size);
+    */
+    return time_exec;
+}
+void init(float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p, int size){
+	double time_setup= omp_get_wtime();
+	omp_set_num_threads(8);
+	#pragma omp parallel for 
     for(int i = 0; i < size; i++){
         a[i] = (float *)malloc(size * sizeof(float));
         a1[i] = (float *)malloc(size * sizeof(float));
@@ -167,112 +219,68 @@ double execution (int size,int threadcount){
         a_p[i] = (float *)malloc(size * sizeof(float));
     }
     // create the identity pivot matrix
-    #pragma omp parallel for
-        for(int i = 0; i < size; i++) {
-            p[i][i] = 1;
-            for(int j = 0; j < size; j++) {
-                a1[i][j] = 0;
-                r[i][j] = 0;
-                if (i != j) {
-                    p[i][j] = 0;
-                }
+	#pragma omp parallel for
+    for(int i = 0; i < size; i++) {
+        p[i][i] = 1;
+        for(int j = 0; j < size; j++) {
+            a1[i][j] = 0;
+            r[i][j] = 0;
+            if (i != j) {
+                p[i][j] = 0;
             }
         }
-
+    }
     create_Matrix(a,size);	
+	
 	time_setup = omp_get_wtime()-time_setup;
 	cout<<"\ntempo setup: "<<time_setup;
-    
 	int za=conta_zeri(a, size);
 	int ntot=size*size;
 	cout<<"\nNumero zeri di A: "<<za<<"\tNumero totale elementi di A: "<<ntot<<endl;
 
     /*cout << "\nMatrix A:\n";
     showMatrix(a, size);*/
+}
 
-	double time= omp_get_wtime();
-    
-	#pragma omp parallel for   
-    for (i = 0; i < size; i++) {
-        l[i][i] = 1;
-        for (j = 0; j < size; j++) {
-            a_p[i][j] = a[i][j];
-
-            if (i != j)
-                l[i][j] = 0;
-        }
-    }
-    double pivot=omp_get_wtime();
-    //cout << "\nPivoting....\n";
-    pivoting(a_p,p,size);
-	pivot=omp_get_wtime()-pivot;
-	cout<<"\ntempo pivoting: "<<pivot;     
-    #pragma omp parallel for
-    for (i = 0; i < size; i++)
-        for (j = 0; j < size; j++)
-            u[i][j] = a_p[i][j];
-    
-    /**/cout << "\nMatrix A pivottata:\n";
-    showMatrix(a_p, size);
-    
-    double cavallo= omp_get_wtime();
-    lu(a_p,l,u,size); 
-	cavallo=omp_get_wtime()-cavallo;
-    cout<<"\ntempo lu: "<<cavallo;        
-    /* TEST LU*/
-    cout << "\nL matrix:\n";
-    showMatrix(l, size);
-    cout << "\nU matrix:\n";
-    showMatrix(u, size);
-    cout << "\nL*U=R";
-    multiply(l,u,r, size);
-    showMatrix(r, size);
-    
-    
-   /**
-    * solving the system LUxi=Pi where i is the column and x is the column
-    * of the inverse to find
-    */
-    //cout << "\nFinding the inverse...";
-    findInverse(a_p,a1,l,u,p,size);
-    
-    cout<< "\nMatrix a^-1:\n";
-    showMatrix(a1, size);
-
-    time = omp_get_wtime()-time;
-    //cout << "\nExecution time: "<< time << "\n\n";
-    
-    multiply(a,a1,r, size);
-    showMatrix(r, size);
-    free(*a);
+void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p){
+	free(*a);
     free(*a_p);
     free(*a1);
     free(*l);
     free(*u);
     free(*p);
-    return time;
+    free(*r);
 }
 
 int main(int argc,char **argv){
-    int dimension[] = { 3,4,5 };
-	int threadcount[] = { 6, 8};
+    int dimension[] = { 500,1500,2000 };
+	int threadcount[] = { 2, 4, 6, 8};
     double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_inverse.txt");
-    for (int i = 0; i < sizeof(threadcount)/sizeof(threadcount[0]); i++)
-	{
-		cout <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
-		outfile <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
-		for (int j = 0; j < sizeof(dimension)/sizeof(dimension[0]); j++)
-		{
+	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
+		float **a = (float **)malloc(dimension[i] * sizeof(float*));
+    	float **l = (float **)malloc(dimension[i] * sizeof(float*));
+    	float **u = (float **)malloc(dimension[i] * sizeof(float*));
+   		float **p = (float **)malloc(dimension[i] * sizeof(float*));
+    	float **r = (float **)malloc(dimension[i] * sizeof(float*));
+    	float **a1 = (float **)malloc(dimension[i] * sizeof(float*));
+    	float **a_p = (float **)malloc(dimension[i] * sizeof(float*));
+		cout <<"\n\n\nDimension: "<< dimension[i];
+		outfile <<"\n\n\nDimension: "<< dimension[i];
+		init(a, l, u, p, r, a1, a_p, dimension[i]);
+		for (int j = 0; j < sizeof(threadcount)/sizeof(threadcount[0]); j++){
 			avgtime = 0; 
-			cout <<"\nDimension: "<< dimension[j];
-			outfile <<"\nDimension: "<< dimension[j];
-			avgtime = execution(dimension[j], threadcount[i]); 
+			cout <<"\nNumber of threads: "<< threadcount[j];
+			outfile <<"\nNumber of threads: "<< threadcount[j];
+			avgtime = execution(a, l, u, p, r, a1, a_p, dimension[i], threadcount[j]); 
 			cout<<"\nTime: "<<avgtime<<"\n";
 			outfile<<"\nTime: "<<avgtime<<"\n";
 		}
+		free_mem(a, l, u, p, r, a1, a_p);
 	}
 	outfile.close();
     return 0;
 }
+
+

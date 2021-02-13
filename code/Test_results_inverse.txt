@@ -1,24 +1,45 @@
 
 
+
+Dimension: 500
+Number of threads: 2
+Time: 0.522
+
+Number of threads: 4
+Time: 0.369
+
 Number of threads: 6
-
-Dimension: 3
-Time: 0.016
-
-Dimension: 4
-Time: 0.0470002
-
-Dimension: 5
-Time: 0.0619998
-
+Time: 0.313
 
 Number of threads: 8
+Time: 0.359
 
-Dimension: 3
-Time: 0.0310001
 
-Dimension: 4
-Time: 0.0309999
 
-Dimension: 5
-Time: 0.0469999
+Dimension: 1500
+Number of threads: 2
+Time: 13.173
+
+Number of threads: 4
+Time: 9.971
+
+Number of threads: 6
+Time: 8.71
+
+Number of threads: 8
+Time: 8.557
+
+
+
+Dimension: 2000
+Number of threads: 2
+Time: 34.437
+
+Number of threads: 4
+Time: 26.159
+
+Number of threads: 6
+Time: 23.801
+
+Number of threads: 8
+Time: 22.783
