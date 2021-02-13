@@ -212,14 +212,14 @@ double execution (int size,int threadcount){
         for (j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
     
-    /*cout << "\nMatrix A pivottata:\n";
-    showMatrix(a_p, size);*/
+    /**/cout << "\nMatrix A pivottata:\n";
+    showMatrix(a_p, size);
     
     double cavallo= omp_get_wtime();
     lu(a_p,l,u,size); 
 	cavallo=omp_get_wtime()-cavallo;
     cout<<"\ntempo lu: "<<cavallo;        
-    /* TEST LU
+    /* TEST LU*/
     cout << "\nL matrix:\n";
     showMatrix(l, size);
     cout << "\nU matrix:\n";
@@ -227,7 +227,7 @@ double execution (int size,int threadcount){
     cout << "\nL*U=R";
     multiply(l,u,r, size);
     showMatrix(r, size);
-    */
+    
     
    /**
     * solving the system LUxi=Pi where i is the column and x is the column
@@ -236,14 +236,14 @@ double execution (int size,int threadcount){
     //cout << "\nFinding the inverse...";
     findInverse(a_p,a1,l,u,p,size);
     
-    //cout<< "\nMatrix a^-1:\n";
-    //showMatrix(a1, size);
+    cout<< "\nMatrix a^-1:\n";
+    showMatrix(a1, size);
 
     time = omp_get_wtime()-time;
     //cout << "\nExecution time: "<< time << "\n\n";
     
-    //multiply(a,a1,r);
-    //showMatrix(r);
+    multiply(a,a1,r, size);
+    showMatrix(r, size);
     free(*a);
     free(*a_p);
     free(*a1);
@@ -254,8 +254,8 @@ double execution (int size,int threadcount){
 }
 
 int main(int argc,char **argv){
-    int dimension[] = { 2500,3000 };
-	int threadcount[] = { 6};
+    int dimension[] = { 3,4,5 };
+	int threadcount[] = { 6, 8};
     double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_inverse.txt");

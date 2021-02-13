@@ -53,13 +53,22 @@ void multiply(float **a, float **b, float **r, int size){
                     r[i][j] = r[i][j] + a[i][k]*b[k][j];
 }
 
-double execution (int size, int threads){
+double execution (float **a, float **b, float **r, int size, int threads){
     omp_set_num_threads(threads);
+	double time;
+    time=omp_get_wtime();
+    multiply(a,b,r, size);
+    time=omp_get_wtime()-time;
+	//showMatrix(r, size);
+    //cout << "\nExecution time: "<< time;
+    
+    return time;
+}
+
+void init(float **a, float **b, float **r, int size){
+	omp_set_num_threads(8);
 	srand(time(NULL));
     int i,j, za, zb;
-    float **a = (float **)malloc(size * sizeof(float*));
-    float **b = (float **)malloc(size * sizeof(float*));
-    float **r = (float **)malloc(size * sizeof(float*));
     double time=0;
     
     #pragma omp parallel for
@@ -87,48 +96,43 @@ double execution (int size, int threads){
 	za=conta_zeri(a, size);
 	zb=conta_zeri(b, size);
 	int ntot=size*size;
-	
 	cout<<"\nNumero zeri di A: "<<za<<"\tNumero totale elementi di A: "<<ntot<<endl;
 	cout<<"Numero zeri di B: "<<zb<<"\tNumero totale elementi di B: "<<ntot<<endl;
-	
    /* cout << "\nMatrix A:\n";
     showMatrix(a, size);
     cout << "\nMatrix B:\n";
     showMatrix(b, size);
     cout << "\n\nA * B =\n";
    */
-    time=omp_get_wtime();
-    multiply(a,b,r, size);
-    time=omp_get_wtime()-time;
-	//showMatrix(r, size);
-    //cout << "\nExecution time: "<< time;
-    free(a);
-    free(b);
-    free(r);
-    return time;
+	
 }
 
 int main(){
-
-	int dimension[] = { 2500, 3000};
-	int threadcount[] = { 6,8 };
+	
+	int dimension[] = { 500, 1000, 1500, 2000, 2500, 3000};
+	int threadcount[] = { 1, 2, 4, 6,8 };
 	double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_multiplication.txt");
-
-	for (int i = 0; i < sizeof(threadcount)/sizeof(threadcount[0]); i++)
-	{
-		cout <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
-		outfile <<"\n\nNumber of threads: "<< threadcount[i]<<"\n";
-		for (int j = 0; j < sizeof(dimension)/sizeof(dimension[0]); j++)
-		{
+	
+	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
+		float **a = (float **)malloc(dimension[i] * sizeof(float*));
+    	float **b = (float **)malloc(dimension[i] * sizeof(float*));
+    	float **r = (float **)malloc(dimension[i] * sizeof(float*));	
+		cout <<"\n\n\nDimension: "<< dimension[i];
+		outfile <<"\n\n\nDimension: "<< dimension[i];
+		init(a, b, r, dimension[i]);
+		for (int j = 0; j < sizeof(threadcount)/sizeof(threadcount[0]); j++){
 			avgtime = 0; 
-			cout <<"\nDimension: "<< dimension[j];
-			outfile <<"\nDimension: "<< dimension[j];
-			avgtime = execution(dimension[j], threadcount[i]); 
+			cout <<"\nNumber of threads: "<< threadcount[j];
+			outfile <<"\nNumber of threads: "<< threadcount[j];
+			avgtime = execution(a, b, r, dimension[i], threadcount[j]); 
 			cout<<"\nTime: "<<avgtime<<"\n";
 			outfile<<"\nTime: "<<avgtime<<"\n";
 		}
+		free(a);
+    	free(b);
+    	free(r);
 	}
 	outfile.close();
 	return 0;

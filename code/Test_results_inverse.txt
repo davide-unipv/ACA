@@ -1,0 +1,24 @@
+
+
+Number of threads: 6
+
+Dimension: 3
+Time: 0.016
+
+Dimension: 4
+Time: 0.0470002
+
+Dimension: 5
+Time: 0.0619998
+
+
+Number of threads: 8
+
+Dimension: 3
+Time: 0.0310001
+
+Dimension: 4
+Time: 0.0309999
+
+Dimension: 5
+Time: 0.0469999
