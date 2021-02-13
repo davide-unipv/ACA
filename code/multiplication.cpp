@@ -25,6 +25,7 @@ void showMatrix(float **matrix, int size){
 void create_Matrix (float **random, int size){
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
+    #pragma omp parallel for collapse(2)
         for(i = 0; i <size; i++)
             for(j = 0; j< size; j++)
                 random[i][j] = rand() %(range);
@@ -71,7 +72,7 @@ double execution (int size, int threads){
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
                 r[i][j] = 0;
-                
+    double sec=omp_get_wtime();         
     #pragma omp sections
 	{
 		#pragma omp section 
@@ -80,6 +81,9 @@ double execution (int size, int threads){
 		#pragma omp section 
 		create_Matrix(b, size);
 	}
+	
+	sec= omp_get_wtime()-sec;
+	cout<<"\ntempo setup: "<<sec;
 	za=conta_zeri(a, size);
 	zb=conta_zeri(b, size);
 	int ntot=size*size;
@@ -89,14 +93,14 @@ double execution (int size, int threads){
 	
    /* cout << "\nMatrix A:\n";
     showMatrix(a, size);
-    //create_Matrix(b, size);
     cout << "\nMatrix B:\n";
     showMatrix(b, size);
     cout << "\n\nA * B =\n";
-    showMatrix(r, size);*/
+   */
     time=omp_get_wtime();
     multiply(a,b,r, size);
     time=omp_get_wtime()-time;
+	//showMatrix(r, size);
     //cout << "\nExecution time: "<< time;
     free(a);
     free(b);
@@ -106,8 +110,8 @@ double execution (int size, int threads){
 
 int main(){
 
-	int dimension[] = { 500,1000,1500,2000,2500,3000 };
-	int threadcount[] = { 1,2,4,6,8 };
+	int dimension[] = { 2500, 3000};
+	int threadcount[] = { 6,8 };
 	double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_multiplication.txt");

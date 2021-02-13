@@ -7,11 +7,12 @@
 #include <omp.h>
 
 using namespace std;
-#define MAXNUMBER 50
+#define MAXNUMBER 100
 #define MINNUMBER 0
  
 void showMatrix(float **matrix, int size){
     cout << "\n";
+   
     for(int i=0; i <size;i++ ){
         for(int j=0; j< size; j++){
             cout << matrix[i][j];
@@ -25,6 +26,7 @@ void create_Matrix (float **random, int size){
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
     srand(time(NULL));
+	#pragma omp parallel for collapse(2)
         for(i = 0; i <size; i++)
             for(j = 0; j< size; j++)
                 random[i][j] = rand() %(range);
@@ -32,6 +34,7 @@ void create_Matrix (float **random, int size){
 
 void lu(float **a, float **l, float **u, int size){
     for (int k = 0; k < size; k++){
+    	//#pragma omp parallel for
         for (int i = k+1; i < size; i++){
                 l[i][k] = u[i][k] / u[k][k];
                 //#pragma omp parallel for //qui va ma non so perché
@@ -47,7 +50,7 @@ void pivoting(float **a, float **p, int size){
     
 	for (int k = 0; k < size-1; k++){   //k=colonna
     	int imax = k;
-        #pragma omp parallel for  //divido le righe sui thread
+        //#pragma omp parallel for  //divido le righe sui thread
         for (int j = k; j < size; j++){ //j=riga
             if (a[j][k] > a[imax][k]){ //finding the index maximum
             //#pragma omp critical
@@ -130,8 +133,19 @@ void multiply(float **a, float **b, float **r, int size){
                     r[i][j] = r[i][j] + a[i][k]*b[k][j];
 }
 
+int conta_zeri(float **matrix, int size){
+	int n=0;
+	for(int i=0; i <size;i++ ){
+        for(int j=0; j< size; j++){
+        	if(matrix[i][j]==0) n++;
+		}
+	}
+	return n;
+}
+
 double execution (int size,int threadcount){
-    omp_set_num_threads(threadcount);
+    double time_setup= omp_get_wtime();
+	omp_set_num_threads(threadcount);
 
     int i, j;
 	float **a = (float **)malloc(size * sizeof(float*));
@@ -164,20 +178,21 @@ double execution (int size,int threadcount){
                 }
             }
         }
-        
-        //float ma[5][5]={41, 1 ,  28  ,    2  ,    34,7    ,   6   ,    2 ,      35,      31,5    ,   1   ,    47    ,  1   ,    38,47    ,  37   ,   18  ,    49  ,    37,22  ,    35   ,   28    ,  48      ,29};
- /*    provare questa matrice con il pivoting:   
-41      1       28      2       34
-7       6       2       35      31
-5       1       47      1       38
-47      37      18      49      37
-22      35      28      48      29*/
-    create_Matrix(a,size);
+
+    create_Matrix(a,size);	
+	time_setup = omp_get_wtime()-time_setup;
+	cout<<"\ntempo setup: "<<time_setup;
+    
+	int za=conta_zeri(a, size);
+	int ntot=size*size;
+	cout<<"\nNumero zeri di A: "<<za<<"\tNumero totale elementi di A: "<<ntot<<endl;
+
     /*cout << "\nMatrix A:\n";
     showMatrix(a, size);*/
 
 	double time= omp_get_wtime();
-    #pragma omp parallel for   
+    
+	#pragma omp parallel for   
     for (i = 0; i < size; i++) {
         l[i][i] = 1;
         for (j = 0; j < size; j++) {
@@ -187,18 +202,23 @@ double execution (int size,int threadcount){
                 l[i][j] = 0;
         }
     }
-    
+    double pivot=omp_get_wtime();
     //cout << "\nPivoting....\n";
     pivoting(a_p,p,size);
+	pivot=omp_get_wtime()-pivot;
+	cout<<"\ntempo pivoting: "<<pivot;     
     #pragma omp parallel for
     for (i = 0; i < size; i++)
         for (j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
-            
+    
     /*cout << "\nMatrix A pivottata:\n";
     showMatrix(a_p, size);*/
     
-    lu(a_p,l,u,size); //come u posso passargli a_p
+    double cavallo= omp_get_wtime();
+    lu(a_p,l,u,size); 
+	cavallo=omp_get_wtime()-cavallo;
+    cout<<"\ntempo lu: "<<cavallo;        
     /* TEST LU
     cout << "\nL matrix:\n";
     showMatrix(l, size);
@@ -234,8 +254,8 @@ double execution (int size,int threadcount){
 }
 
 int main(int argc,char **argv){
-    int dimension[] = { 500,1000,1500,2000,2500,3000 };
-	int threadcount[] = { 1,2,4,6,8};
+    int dimension[] = { 2500,3000 };
+	int threadcount[] = { 6};
     double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_inverse.txt");

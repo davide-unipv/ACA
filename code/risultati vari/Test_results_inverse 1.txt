@@ -104,37 +104,7 @@ Time: 45.646
 Dimension: 3000
 Time: 98.987
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <math.h>
-#include <omp.h>
 
-using namespace std;
-#define MAXNUMBER 50
-#define MINNUMBER 0
- 
-void showMatrix(float **matrix, int size){
-    cout << "\n";
-    for(int i=0; i <size;i++ ){
-        for(int j=0; j< size; j++){
-            cout << matrix[i][j];
-            cout << "\t";
-        }
-        cout << "\n"; 
-    }
-}
-
-void create_Matrix (float **random, int size){
-    int i, j;
-    int range = MAXNUMBER - MINNUMBER;
-    srand(time(NULL));
-        for(i = 0; i <size; i++)
-            for(j = 0; j< size; j++)
-                random[i][j] = rand() %(range);
-}
 
 void lu(float **a, float **l, float **u, int size){
     for (int k = 0; k < size; k++){
