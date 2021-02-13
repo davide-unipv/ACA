@@ -12,7 +12,6 @@ using namespace std;
  
 void showMatrix(float **matrix, int size){
     cout << "\n";
-   
     for(int i=0; i <size;i++ ){
         for(int j=0; j< size; j++){
             cout << matrix[i][j];
@@ -26,7 +25,7 @@ void create_Matrix (float **random, int size){
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
     srand(time(NULL));
-	#pragma omp parallel for collapse(2)
+	//#pragma omp parallel for 
         for(i = 0; i <size; i++)
             for(j = 0; j< size; j++)
                 random[i][j] = rand() %(range);
@@ -73,7 +72,7 @@ void forwardSubst(float **l, float **p,int column, float *y, int size){
   	//cout<< "\nForward colonna:"<<column<<"\n";
 	//y[0] = p[0][column] / l[0][0];
 	//cout<< "\n00 :"<<y[0]<<"\n";
-	float sum=0;
+	double sum=0;
     for(int i = 0; i< size; i++){
     	
         //y[i] = p[i][column];
@@ -94,7 +93,7 @@ void backwardSubst(float **u, float *y, float **a1, int column, int size){
     //a1[size-1][column] = y[size-1]/u[size-1][size-1];
     //cout<< "\ncolumn "<<column<<"\nA1 "<<a1[size-1][column];
     //cout<< "\nColumn:"<<column;
-    float sum;
+    double sum;
     a1[size-1][column]=y[size-1]/ u[size-1][size-1];
     for(int i= size-2; i >= 0; i--){
         //a1[i][column] = y[i];
@@ -124,8 +123,6 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p, int siz
 }
 
 void multiply(float **a, float **b, float **r, int size){
-    //the program will work only on square matrices
-    //multiply a*b
     #pragma omp parallel for collapse(3) 
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
@@ -144,65 +141,81 @@ int conta_zeri(float **matrix, int size){
 }
 
 double execution (float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p, int size,int threadcount){
-	omp_set_num_threads(threadcount);
+	omp_set_num_threads(8);
 	
+	#pragma omp parallel for
+    for(int i = 0; i < size; i++) {
+        p[i][i] = 1;
+        for(int j = 0; j < size; j++) {
+            a1[i][j] = 0;
+            r[i][j] = 0;
+            if (i != j) {
+                p[i][j] = 0;
+            }
+        }
+    }
+    omp_set_num_threads(threadcount);
 	double time_exec= omp_get_wtime();
 	#pragma omp parallel for   
     for (int i = 0; i < size; i++) {
         l[i][i] = 1;
         for (int j = 0; j < size; j++) {
             a_p[i][j] = a[i][j];
-
             if (i != j)
                 l[i][j] = 0;
         }
     }
     
-    double pivot=omp_get_wtime();
-    //cout << "\nPivoting....\n";
+    //double pivot=omp_get_wtime();
+    
     pivoting(a_p,p,size);
-	pivot=omp_get_wtime()-pivot;
+	/*pivot=omp_get_wtime()-pivot;
 	cout<<"\ntempo pivoting: "<<pivot; 
-	    
+	    */
     #pragma omp parallel for
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
     
-    /*cout << "\nMatrix A pivottata:\n";
-    showMatrix(a_p, size);*/
+    /**/cout << "\nMatrix A pivottata:\n";
+    showMatrix(a_p, size);
     
-    double cavallo= omp_get_wtime();
+    //double cavallo=omp_get_wtime();
     lu(a_p,l,u,size); 
-	cavallo=omp_get_wtime()-cavallo;
+	/*cavallo=omp_get_wtime()-cavallo;
     cout<<"\ntempo lu: "<<cavallo;        
-    /* TEST LU
+     TEST LU
     cout << "\nL matrix:\n";
     showMatrix(l, size);
     cout << "\nU matrix:\n";
-    showMatrix(u, size);
+    showMatrix(u, size); 
     cout << "\nL*U=R";
     multiply(l,u,r, size);
     showMatrix(r, size);
-    */
-    
+   */
+    cout << "\nL matrix:\n";
+    showMatrix(l, size);
+    cout << "\nU matrix:\n";
+    showMatrix(u, size); 
+    cout << "\nL*U=R";
    /**
     * solving the system LUxi=Pi where i is the column and x is the column
     * of the inverse to find
     */
     //cout << "\nFinding the inverse...";
-    double inv= omp_get_wtime();
+    //double inv= omp_get_wtime();
     findInverse(a_p,a1,l,u,p,size);
     
-    //cout<< "\nMatrix a^-1:\n";
-    //showMatrix(a1, size);
-	inv=omp_get_wtime()-inv;
+    cout<< "\nMatrix a^-1:\n";
+    showMatrix(a1, size);
+	//inv=omp_get_wtime()-inv;
     time_exec = omp_get_wtime()-time_exec;
-    cout << "\nTempo inversa: "<< inv;
+    //cout << "\nTempo inversa: "<< inv;
     //cout << "\nExecution time: "<< time << "\n\n";
-    /*multiply(a,a1,r, size);
+    cout<<"\nmoltiplicazione a*a-1: "<<endl;
+    multiply(a,a1,r, size);
     showMatrix(r, size);
-    */
+    /**/
     return time_exec;
 }
 void init(float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p, int size){
@@ -218,18 +231,7 @@ void init(float **a, float **l, float **u, float **p, float **r, float **a1, flo
         r[i] = (float *)malloc(size * sizeof(float));
         a_p[i] = (float *)malloc(size * sizeof(float));
     }
-    // create the identity pivot matrix
-	#pragma omp parallel for
-    for(int i = 0; i < size; i++) {
-        p[i][i] = 1;
-        for(int j = 0; j < size; j++) {
-            a1[i][j] = 0;
-            r[i][j] = 0;
-            if (i != j) {
-                p[i][j] = 0;
-            }
-        }
-    }
+	
     create_Matrix(a,size);	
 	
 	time_setup = omp_get_wtime()-time_setup;
@@ -238,8 +240,8 @@ void init(float **a, float **l, float **u, float **p, float **r, float **a1, flo
 	int ntot=size*size;
 	cout<<"\nNumero zeri di A: "<<za<<"\tNumero totale elementi di A: "<<ntot<<endl;
 
-    /*cout << "\nMatrix A:\n";
-    showMatrix(a, size);*/
+    /**/cout << "\nMatrix A:\n";
+    showMatrix(a, size);
 }
 
 void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p){
@@ -253,8 +255,8 @@ void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1,
 }
 
 int main(int argc,char **argv){
-    int dimension[] = { 500,1500,2000 };
-	int threadcount[] = { 2, 4, 6, 8};
+    int dimension[] = { 3 };
+	int threadcount[] = {  6};
     double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_inverse.txt");
