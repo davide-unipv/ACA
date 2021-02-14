@@ -1,0 +1,108 @@
+
+
+
+Dimension: 500
+Number of threads: 1
+Time: 0.805
+
+Number of threads: 2
+Time: 0.598
+
+Number of threads: 4
+Time: 0.348
+
+Number of threads: 6
+Time: 0.269
+
+Number of threads: 8
+Time: 0.315
+
+
+
+Dimension: 1000
+Number of threads: 1
+Time: 9.381
+
+Number of threads: 2
+Time: 5.01
+
+Number of threads: 4
+Time: 3.409
+
+Number of threads: 6
+Time: 2.738
+
+Number of threads: 8
+Time: 2.448
+
+
+
+Dimension: 1500
+Number of threads: 1
+Time: 33.259
+
+Number of threads: 2
+Time: 18.779
+
+Number of threads: 4
+Time: 12.636
+
+Number of threads: 6
+Time: 10.386
+
+Number of threads: 8
+Time: 9.5
+
+
+
+Dimension: 2000
+Number of threads: 1
+Time: 44.197
+
+Number of threads: 2
+Time: 27.184
+
+Number of threads: 4
+Time: 19.008
+
+Number of threads: 6
+Time: 18.849
+
+Number of threads: 8
+Time: 18.507
+
+
+
+Dimension: 2500
+Number of threads: 1
+Time: 33.095
+
+Number of threads: 2
+Time: 21.515
+
+Number of threads: 4
+Time: 16.437
+
+Number of threads: 6
+Time: 14.927
+
+Number of threads: 8
+Time: 14.534
+
+
+
+Dimension: 3000
+Number of threads: 1
+Time: 42.736
+
+Number of threads: 2
+Time: 24.763
+
+Number of threads: 4
+Time: 18.133
+
+Number of threads: 6
+Time: 15.667
+
+Number of threads: 8
+Time: 13.37
