@@ -245,7 +245,7 @@ void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1,
 int main(int argc,char **argv){
     int dimension[] = { 500, 1000, 1500, 2000, 2500 };
 	int threadcount[] = { 1};
-    double avgtime;
+    double avgtime, sum;
 	ofstream outfile;
 	outfile.open("Test_results_inverse_serial.txt");
 	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
@@ -260,10 +260,14 @@ int main(int argc,char **argv){
 		outfile <<"\n\n\nDimension: "<< dimension[i];
 		init(a, l, u, p, r, a1, a_p, dimension[i]);
 		for (int j = 0; j < sizeof(threadcount)/sizeof(threadcount[0]); j++){
-			avgtime = 0; 
+			avgtime = 0;
+			sum=0; 
 			cout <<"\nNumber of threads: "<< threadcount[j];
 			outfile <<"\nNumber of threads: "<< threadcount[j];
-			avgtime = execution(a, l, u, p, r, a1, a_p, dimension[i], threadcount[j]); 
+			for(int k=0; k<4; k++){
+				sum = sum+execution(a, l, u, p, r, a1, a_p, dimension[i], threadcount[j]); 	
+			}
+			avgtime=sum/4;
 			cout<<"\nTime: "<<avgtime<<"\n";
 			outfile<<"\nTime: "<<avgtime<<"\n";
 		}

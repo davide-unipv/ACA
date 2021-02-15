@@ -25,7 +25,7 @@ void showMatrix(float **matrix, int size){
 void create_Matrix (float **random, int size){
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
-    //#pragma omp parallel for collapse(2)
+    #pragma omp parallel for collapse(2)
         for(i = 0; i <size; i++)
             for(j = 0; j< size; j++)
                 random[i][j] = rand() %(range);
@@ -46,7 +46,7 @@ int conta_zeri(float **matrix, int size){
 void multiply(float **a, float **b, float **r, int size){
     //the program will work only on square matrices
     //multiply a*b
-    	#pragma omp parallel for
+    #pragma omp parallel for collapse(2)
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
                 for(int k = 0; k < size; k++)
@@ -54,18 +54,14 @@ void multiply(float **a, float **b, float **r, int size){
 }
 
 double execution (float **a, float **b, float **r, int size, int threads){
-    omp_set_num_threads(8);
-	#pragma omp parallel for collapse(2)
-        for(int i = 0; i < size; i++)
-            for(int j = 0; j < size; j++)
-                r[i][j] = 0;
-	omp_set_num_threads(threads);
+    omp_set_num_threads(threads);
 	double time;
     time=omp_get_wtime();
     multiply(a,b,r, size);
     time=omp_get_wtime()-time;
 	//showMatrix(r, size);
     //cout << "\nExecution time: "<< time;
+    
     return time;
 }
 
@@ -81,9 +77,12 @@ void init(float **a, float **b, float **r, int size){
         b[i] = (float *)malloc(size * sizeof(float));
         r[i] = (float *)malloc(size * sizeof(float));
     }
-    
+    #pragma omp parallel for collapse(2)
+        for(int i = 0; i < size; i++)
+            for(int j = 0; j < size; j++)
+                r[i][j] = 0;
     double sec=omp_get_wtime();         
-    /*#pragma omp sections
+    #pragma omp sections
 	{
 		#pragma omp section 
 		create_Matrix(a, size);
@@ -91,9 +90,7 @@ void init(float **a, float **b, float **r, int size){
 		#pragma omp section 
 		create_Matrix(b, size);
 	}
-	*/
-	create_Matrix(a, size);
-	create_Matrix(b, size);
+	
 	sec= omp_get_wtime()-sec;
 	cout<<"\ntempo setup: "<<sec;
 	za=conta_zeri(a, size);
@@ -112,11 +109,11 @@ void init(float **a, float **b, float **r, int size){
 
 int main(){
 	
-	int dimension[] = { 500, 1000, 1500, 2000, 2500};
-	int threadcount[] = { 2, 4, 8, 12, 16, 20, 24};
-	double avgtime, sum;
+	int dimension[] = { 500, 1000, 1500, 2000, 2500, 3000};
+	int threadcount[] = { 1 };
+	double avgtime;
 	ofstream outfile;
-	outfile.open("Test_results_multiplication.txt");
+	outfile.open("Test_results_multiplication_seriale.txt");
 	
 	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
 		float **a = (float **)malloc(dimension[i] * sizeof(float*));
@@ -126,14 +123,10 @@ int main(){
 		outfile <<"\n\n\nDimension: "<< dimension[i];
 		init(a, b, r, dimension[i]);
 		for (int j = 0; j < sizeof(threadcount)/sizeof(threadcount[0]); j++){
-			avgtime = 0;
-			sum=0; 
+			avgtime = 0; 
 			cout <<"\nNumber of threads: "<< threadcount[j];
 			outfile <<"\nNumber of threads: "<< threadcount[j];
-			for(int k=0;k<4;k++){	
-				sum = sum+execution(a, b, r, dimension[i], threadcount[j]); 
-			}
-			avgtime =sum/4; 
+			avgtime = execution(a, b, r, dimension[i], threadcount[j]); 
 			cout<<"\nTime: "<<avgtime<<"\n";
 			outfile<<"\nTime: "<<avgtime<<"\n";
 		}

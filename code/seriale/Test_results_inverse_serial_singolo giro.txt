@@ -1,0 +1,30 @@
+
+
+
+Dimension: 500
+Number of threads: 1
+Time: 0.741
+
+
+
+Dimension: 1000
+Number of threads: 1
+Time: 6.665
+
+
+
+Dimension: 1500
+Number of threads: 1
+Time: 20.725
+
+
+
+Dimension: 2000
+Number of threads: 1
+Time: 52.439
+
+
+
+Dimension: 2500
+Number of threads: 1
+Time: 100.156

@@ -105,7 +105,7 @@ void backwardSubst(float **u, float *y, float **a1, int column, int size){
 
 void findInverse(float **a, float **a1, float **l, float **u, float **p, int size){
     //i can do each column indipendentily
-    #pragma omp parallel for 
+    //#pragma omp parallel for 
     for(int i=0; i< size; i++){
         float* y = new float[size](); //vettore di puntatori tutto a 0. è di volta in volta la colonna che modifichiamo
         forwardSubst(l,p,i,y,size); //dal sito: p=b e y=d
@@ -116,7 +116,7 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p, int siz
 }
 
 void multiply(float **a, float **b, float **r, int size){
-    #pragma omp parallel for collapse(3) 
+    //#pragma omp parallel for collapse(3) 
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
                 for(int k = 0; k < size; k++)
@@ -134,8 +134,8 @@ int conta_zeri(float **matrix, int size){
 }
 
 double execution (float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p, int size, int threadcount){
-	omp_set_num_threads(8);
-	#pragma omp parallel for
+	//omp_set_num_threads(8);
+	//#pragma omp parallel for
     for(int i = 0; i < size; i++) {
         p[i][i] = 1;
         for(int j = 0; j < size; j++) {
@@ -146,10 +146,10 @@ double execution (float **a, float **l, float **u, float **p, float **r, float *
             }
         }
     }
-    omp_set_num_threads(threadcount);
+    //omp_set_num_threads(threadcount);
     
 	double time_exec= omp_get_wtime();
-	#pragma omp parallel for   
+	//#pragma omp parallel for   
     for (int i = 0; i < size; i++) {
         l[i][i] = 1;
         for (int j = 0; j < size; j++) {
@@ -165,7 +165,7 @@ double execution (float **a, float **l, float **u, float **p, float **r, float *
 	/*pivot=omp_get_wtime()-pivot;
 	cout<<"\ntempo pivoting: "<<pivot; */
 	    
-    #pragma omp parallel for
+    //#pragma omp parallel for
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
@@ -208,8 +208,8 @@ double execution (float **a, float **l, float **u, float **p, float **r, float *
 }
 void init(float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p, int size){
 	double time_setup= omp_get_wtime();
-	omp_set_num_threads(8);
-	#pragma omp parallel for 
+	//omp_set_num_threads(8);
+	//#pragma omp parallel for 
     for(int i = 0; i < size; i++){
         a[i] = (float *)malloc(size * sizeof(float));
         a1[i] = (float *)malloc(size * sizeof(float));
@@ -243,11 +243,11 @@ void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1,
 }
 
 int main(int argc,char **argv){
-    int dimension[] = { 500, 1000, 1500, 2000, 2500};
-	int threadcount[] = { 2, 4, 8, 12, 16, 20, 24};
-    double avgtime, sum;
+    int dimension[] = { 500, 1000, 1500, 2000, 2500 };
+	int threadcount[] = { 1};
+    double avgtime;
 	ofstream outfile;
-	outfile.open("Test_results_inverse.txt");
+	outfile.open("Test_results_inverse_serial.txt");
 	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
 		float **a = (float **)malloc(dimension[i] * sizeof(float*));
     	float **l = (float **)malloc(dimension[i] * sizeof(float*));
@@ -260,14 +260,10 @@ int main(int argc,char **argv){
 		outfile <<"\n\n\nDimension: "<< dimension[i];
 		init(a, l, u, p, r, a1, a_p, dimension[i]);
 		for (int j = 0; j < sizeof(threadcount)/sizeof(threadcount[0]); j++){
-			avgtime = 0;
-			sum=0; 
+			avgtime = 0; 
 			cout <<"\nNumber of threads: "<< threadcount[j];
 			outfile <<"\nNumber of threads: "<< threadcount[j];
-			for(int k=0; k<4; k++){
-				sum = sum+execution(a, l, u, p, r, a1, a_p, dimension[i], threadcount[j]); 	
-			}
-			avgtime=sum/4;
+			avgtime = execution(a, l, u, p, r, a1, a_p, dimension[i], threadcount[j]); 
 			cout<<"\nTime: "<<avgtime<<"\n";
 			outfile<<"\nTime: "<<avgtime<<"\n";
 		}

@@ -60,7 +60,7 @@ double execution (float **a, float **b, float **r, int size, int threads){
     multiply(a,b,r, size);
     time=omp_get_wtime()-time;
 	//showMatrix(r, size);
-    //cout << "\nExecution time: "<< time;
+    cout << "\nExecution time: "<< time;
     
     return time;
 }
@@ -111,7 +111,7 @@ int main(){
 	
 	int dimension[] = { 500, 1000, 1500, 2000, 2500, 3000};
 	int threadcount[] = { 1 };
-	double avgtime;
+	double avgtime, sum;
 	ofstream outfile;
 	outfile.open("Test_results_multiplication_seriale.txt");
 	
@@ -123,10 +123,14 @@ int main(){
 		outfile <<"\n\n\nDimension: "<< dimension[i];
 		init(a, b, r, dimension[i]);
 		for (int j = 0; j < sizeof(threadcount)/sizeof(threadcount[0]); j++){
-			avgtime = 0; 
+			avgtime = 0;
+			sum=0; 
 			cout <<"\nNumber of threads: "<< threadcount[j];
 			outfile <<"\nNumber of threads: "<< threadcount[j];
-			avgtime = execution(a, b, r, dimension[i], threadcount[j]); 
+			for(int k=0;k<4;k++){	
+				sum = sum+execution(a, b, r, dimension[i], threadcount[j]); 
+			}
+			avgtime =sum/4;
 			cout<<"\nTime: "<<avgtime<<"\n";
 			outfile<<"\nTime: "<<avgtime<<"\n";
 		}
