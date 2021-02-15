@@ -48,7 +48,6 @@ void multiply(float **a, float **b, float **r, int size){
     //multiply a*b
     	#pragma omp parallel for
         for(int i = 0; i < size; i++)
-	
             for(int j = 0; j < size; j++)
                 for(int k = 0; k < size; k++)
                     r[i][j] = r[i][j] + a[i][k]*b[k][j];
@@ -114,7 +113,7 @@ void init(float **a, float **b, float **r, int size){
 int main(){
 	
 	int dimension[] = { 500, 1000, 1500, 2000, 2500};
-	int threadcount[] = { 2, 4, 6,8 };
+	int threadcount[] = { 2, 4, 8, 12, 16, 20, 24};
 	double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_multiplication.txt");
