@@ -46,9 +46,8 @@ int conta_zeri(float **matrix, int size){
 void multiply(float **a, float **b, float **r, int size){
     //the program will work only on square matrices
     //multiply a*b
-    	#pragma omp parallel for
+    #pragma omp parallel for collapse(2)
         for(int i = 0; i < size; i++)
-	
             for(int j = 0; j < size; j++)
                 for(int k = 0; k < size; k++)
                     r[i][j] = r[i][j] + a[i][k]*b[k][j];
@@ -143,3 +142,77 @@ int main(){
 }
 
 
+
+
+Dimension: 500
+Number of threads: 2
+Time: 0.406
+
+Number of threads: 4
+Time: 0.297
+
+Number of threads: 6
+Time: 0.234
+
+Number of threads: 8
+Time: 0.219
+
+
+
+Dimension: 1000
+Number of threads: 2
+Time: 4.158
+
+Number of threads: 4
+Time: 2.344
+
+Number of threads: 6
+Time: 2.251
+
+Number of threads: 8
+Time: 1.985
+
+
+
+Dimension: 1500
+Number of threads: 2
+Time: 15.661
+
+Number of threads: 4
+Time: 9.753
+
+Number of threads: 6
+Time: 8.924
+
+Number of threads: 8
+Time: 7.925
+
+
+
+Dimension: 2000
+Number of threads: 2
+Time: 49.61
+
+Number of threads: 4
+Time: 35.949
+
+Number of threads: 6
+Time: 34.948
+
+Number of threads: 8
+Time: 39.434
+
+
+
+Dimension: 2500
+Number of threads: 2
+Time: 101.985
+
+Number of threads: 4
+Time: 67.364
+
+Number of threads: 6
+Time: 65.099
+
+Number of threads: 8
+Time: 66.883

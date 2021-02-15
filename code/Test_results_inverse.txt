@@ -2,49 +2,74 @@
 
 
 Dimension: 500
-Number of threads: 1
-Time: 4.047
-
 Number of threads: 2
-Time: 5.853
+Time: 0.5
 
 Number of threads: 4
-Time: 6.809
+Time: 0.313
 
 Number of threads: 6
-Time: 8.375
+Time: 0.297
 
 Number of threads: 8
-Time: 9.925
+Time: 0.328
 
 
 
 Dimension: 1000
-Number of threads: 1
-Time: 17.343
-
 Number of threads: 2
-Time: 24.447
+Time: 4.049
 
 Number of threads: 4
-Time: 29.179
+Time: 2.985
 
 Number of threads: 6
-Time: 36.661
+Time: 2.657
 
 Number of threads: 8
-Time: 43.818
+Time: 2.469
 
 
 
 Dimension: 1500
-Number of threads: 1
-Time: 50.363
-
 Number of threads: 2
-Time: 65.736
+Time: 13.26
 
 Number of threads: 4
-Time: 73.552
+Time: 9.832
 
-Number of threads: 
+Number of threads: 6
+Time: 8.956
+
+Number of threads: 8
+Time: 8.346
+
+
+
+Dimension: 2000
+Number of threads: 2
+Time: 34.746
+
+Number of threads: 4
+Time: 25.492
+
+Number of threads: 6
+Time: 24.258
+
+Number of threads: 8
+Time: 22.851
+
+
+
+Dimension: 2500
+Number of threads: 2
+Time: 65.94
+
+Number of threads: 4
+Time: 50.578
+
+Number of threads: 6
+Time: 48.109
+
+Number of threads: 8
+Time: 44.326

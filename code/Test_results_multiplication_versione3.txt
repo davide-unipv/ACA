@@ -143,3 +143,77 @@ int main(){
 }
 
 
+
+
+Dimension: 500
+Number of threads: 2
+Time: 0.375
+
+Number of threads: 4
+Time: 0.329
+
+Number of threads: 6
+Time: 0.25
+
+Number of threads: 8
+Time: 0.25
+
+
+
+Dimension: 1000
+Number of threads: 2
+Time: 4.346
+
+Number of threads: 4
+Time: 2.594
+
+Number of threads: 6
+Time: 2.329
+
+Number of threads: 8
+Time: 2.063
+
+
+
+Dimension: 1500
+Number of threads: 2
+Time: 15.348
+
+Number of threads: 4
+Time: 9.706
+
+Number of threads: 6
+Time: 8.893
+
+Number of threads: 8
+Time: 7.987
+
+
+
+Dimension: 2000
+Number of threads: 2
+Time: 52.197
+
+Number of threads: 4
+Time: 37.949
+
+Number of threads: 6
+Time: 36.729
+
+Number of threads: 8
+Time: 40.747
+
+
+
+Dimension: 2500
+Number of threads: 2
+Time: 104.315
+
+Number of threads: 4
+Time: 71.521
+
+Number of threads: 6
+Time: 64.972
+
+Number of threads: 8
+Time: 67.639
