@@ -109,7 +109,7 @@ void init(float **a, float **b, float **r, int size){
 
 int main(){
 	
-	int dimension[] = { 500, 1000, 1500, 2000, 2500, 3000};
+	int dimension[] = { 500, 1000, 1500, 2000, 2500};
 	int threadcount[] = { 1 };
 	double avgtime, sum;
 	ofstream outfile;

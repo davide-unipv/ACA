@@ -1,14 +1,14 @@
 Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
- time   seconds   seconds    calls  Ks/call  Ks/call  name    
-100.09   1041.70  1041.70        1     1.04     1.04  _GLOBAL__sub_I__Z10showMatrixPPfi
-  0.02   1041.90     0.20       10     0.00     0.00  create_Matrix(float**, int)
-  0.01   1042.02     0.12       10     0.00     0.00  conta_zeri(float**, int)
-  0.00   1042.02     0.00       35     0.00     0.00  multiply(float**, float**, float**, int)
-  0.00   1042.02     0.00       35     0.00     0.00  execution(float**, float**, float**, int, int)
-  0.00   1042.02     0.00        5     0.00     0.00  init(float**, float**, float**, int)
-  0.00   1042.02     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
+ time   seconds   seconds    calls   s/call   s/call  name    
+100.10    407.22   407.22        1   407.22   407.22  _GLOBAL__sub_I__Z10showMatrixPPfi
+  0.01    407.27     0.05       10     0.01     0.01  conta_zeri(float**, int)
+  0.00    407.27     0.00       10     0.00     0.00  create_Matrix(float**, int)
+  0.00    407.27     0.00        5     0.00     0.01  init(float**, float**, float**, int)
+  0.00    407.27     0.00        5     0.00     0.00  multiply(float**, float**, float**, int)
+  0.00    407.27     0.00        5     0.00     0.00  execution(float**, float**, float**, int, int)
+  0.00    407.27     0.00        1     0.00     0.00  __static_initialization_and_destruction_0(int, int)
  %         the percentage of the total running time of the
 time       program used by this function.
 cumulative a running sum of the number of seconds accounted
@@ -18,12 +18,15 @@ seconds    function alone.  This is the major sort for this
            listing.
 calls      the number of times this function was invoked, if
            this function is profiled, else blank.
+
  self      the average number of milliseconds spent in this
 ms/call    function per call, if this function is profiled,
            else blank.
+
  total     the average number of milliseconds spent in this
 ms/call    function and its descendents per call, if this
            function is profiled, else blank.
+
 name       the name of the function.  This is the minor sort
            for this listing. The index shows the location of
            the function in the gprof listing. If the index is
@@ -41,39 +44,39 @@ notice and this notice are preserved.
                      Call graph (explanation follows)
 
 
-granularity: each sample hit covers 2 byte(s) for 0.00% of 1042.02 seconds
+granularity: each sample hit covers 2 byte(s) for 0.00% of 407.27 seconds
 
 index % time    self  children    called     name
-             1041.70    0.00       1/1           __libc_csu_init [2]
-[1]    100.0 1041.70    0.00       1         _GLOBAL__sub_I__Z10showMatrixPPfi [1]
+              407.22    0.00       1/1           __libc_csu_init [2]
+[1]    100.0  407.22    0.00       1         _GLOBAL__sub_I__Z10showMatrixPPfi [1]
                 0.00    0.00       1/1           __static_initialization_and_destruction_0(int, int) [15]
 -----------------------------------------------
                                                  <spontaneous>
-[2]    100.0    0.00 1041.70                 __libc_csu_init [2]
-             1041.70    0.00       1/1           _GLOBAL__sub_I__Z10showMatrixPPfi [1]
+[2]    100.0    0.00  407.22                 __libc_csu_init [2]
+              407.22    0.00       1/1           _GLOBAL__sub_I__Z10showMatrixPPfi [1]
 -----------------------------------------------
                                                  <spontaneous>
-[3]      0.0    0.00    0.32                 main [3]
-                0.00    0.32       5/5           init(float**, float**, float**, int) [4]
-                0.00    0.00      35/35          execution(float**, float**, float**, int, int) [14]
+[3]      0.0    0.00    0.05                 main [3]
+                0.00    0.05       5/5           init(float**, float**, float**, int) [5]
+                0.00    0.00       5/5           execution(float**, float**, float**, int, int) [14]
 -----------------------------------------------
-                0.00    0.32       5/5           main [3]
-[4]      0.0    0.00    0.32       5         init(float**, float**, float**, int) [4]
-                0.20    0.00      10/10          create_Matrix(float**, int) [5]
-                0.12    0.00      10/10          conta_zeri(float**, int) [6]
+                0.05    0.00      10/10          init(float**, float**, float**, int) [5]
+[4]      0.0    0.05    0.00      10         conta_zeri(float**, int) [4]
 -----------------------------------------------
-                0.20    0.00      10/10          init(float**, float**, float**, int) [4]
-[5]      0.0    0.20    0.00      10         create_Matrix(float**, int) [5]
+                0.00    0.05       5/5           main [3]
+[5]      0.0    0.00    0.05       5         init(float**, float**, float**, int) [5]
+                0.05    0.00      10/10          conta_zeri(float**, int) [4]
+                0.00    0.00      10/10          create_Matrix(float**, int) [12]
 -----------------------------------------------
-                0.12    0.00      10/10          init(float**, float**, float**, int) [4]
-[6]      0.0    0.12    0.00      10         conta_zeri(float**, int) [6]
+                0.00    0.00      10/10          init(float**, float**, float**, int) [5]
+[12]     0.0    0.00    0.00      10         create_Matrix(float**, int) [12]
 -----------------------------------------------
-                0.00    0.00      35/35          execution(float**, float**, float**, int, int) [14]
-[13]     0.0    0.00    0.00      35         multiply(float**, float**, float**, int) [13]
+                0.00    0.00       5/5           execution(float**, float**, float**, int, int) [14]
+[13]     0.0    0.00    0.00       5         multiply(float**, float**, float**, int) [13]
 -----------------------------------------------
-                0.00    0.00      35/35          main [3]
-[14]     0.0    0.00    0.00      35         execution(float**, float**, float**, int, int) [14]
-                0.00    0.00      35/35          multiply(float**, float**, float**, int) [13]
+                0.00    0.00       5/5           main [3]
+[14]     0.0    0.00    0.00       5         execution(float**, float**, float**, int, int) [14]
+                0.00    0.00       5/5           multiply(float**, float**, float**, int) [13]
 -----------------------------------------------
                 0.00    0.00       1/1           _GLOBAL__sub_I__Z10showMatrixPPfi [1]
 [15]     0.0    0.00    0.00       1         __static_initialization_and_destruction_0(int, int) [15]
@@ -172,4 +175,4 @@ notice and this notice are preserved.
 Index by function name
 
    [1] _GLOBAL__sub_I__Z10showMatrixPPfi [15] __static_initialization_and_destruction_0(int, int) [14] execution(float**, float**, float**, int, int)
-   [6] conta_zeri(float**, int) [4] init(float**, float**, float**, int)
+   [4] conta_zeri(float**, int) [5] init(float**, float**, float**, int)
