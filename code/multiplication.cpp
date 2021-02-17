@@ -72,7 +72,7 @@ double execution (float **a, float **b, float **r, int size, int threads){
 void init(float **a, float **b, float **r, int size){
 	omp_set_num_threads(8);
 	srand(time(NULL));
-    int i,j, za, zb;
+    int za, zb;
     double time=0;
     
     #pragma omp parallel for
@@ -112,7 +112,7 @@ void init(float **a, float **b, float **r, int size){
 
 int main(){
 	
-	int dimension[] = { 500, 1000, 1500, 2000, 2500};
+	int dimension[] = { 3000, 3500, 4000};
 	int threadcount[] = { 2, 4, 8, 12, 16, 20, 24};
 	double avgtime, sum;
 	ofstream outfile;

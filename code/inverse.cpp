@@ -243,7 +243,7 @@ void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1,
 }
 
 int main(int argc,char **argv){
-    int dimension[] = { 500, 1000, 1500, 2000, 2500};
+    int dimension[] = { 3000, 3500, 4000};
 	int threadcount[] = { 2, 4, 8, 12, 16, 20, 24};
     double avgtime, sum;
 	ofstream outfile;

@@ -243,11 +243,11 @@ void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1,
 }
 
 int main(int argc,char **argv){
-    int dimension[] = { 500, 1000, 1500, 2000, 2500};
+    int dimension[] = { 3000, 3500, 4000};
 	int threadcount[] = { 1};
     double avgtime, sum;
 	ofstream outfile;
-	outfile.open("Test_results_inverse_serial.txt");
+	outfile.open("Test_results_inverse_seriale.txt");
 	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
 		float **a = (float **)malloc(dimension[i] * sizeof(float*));
     	float **l = (float **)malloc(dimension[i] * sizeof(float*));
