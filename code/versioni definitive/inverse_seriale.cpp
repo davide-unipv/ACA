@@ -76,8 +76,7 @@ void backwardSubst(float **u, float *y, float **a1, int column, int size){
     a1[size-1][column]=y[size-1]/ u[size-1][size-1];
     for(int i= size-2; i >= 0; i--){
 		sum=y[i];
-        for (int j = size-1; j > i; j--)
-        {
+        for (int j = size-1; j > i; j--){
            sum = sum- u[i][j]*a1[j][column] ;
         }
         a1[i][column] = sum/u[i][i]; 
@@ -87,12 +86,10 @@ void backwardSubst(float **u, float *y, float **a1, int column, int size){
 
 void findInverse(float **a, float **a1, float **l, float **u, float **p, int size){ //a1 è l'inversa
     for(int i=0; i< size; i++){
-        float* y = new float[size](); //vettore di puntatori tutto a 0. è di volta in volta la colonna che modifichiamo
+        float* y = new float[size]();
         forwardSubst(l,p,i,y,size); 
         backwardSubst(u,y,a1,i,size);
-       
     }
-
 }
 
 void multiply(float **a, float **b, float **r, int size){	//per testare l'inversa
@@ -149,7 +146,7 @@ double execution (float **a, float **l, float **u, float **p, float **r, float *
     
 	double lu_time=omp_get_wtime();
     lu(a_p,l,u,size); 
-	cavallo=omp_get_wtime()-lu_time;
+	lu_time=omp_get_wtime()-lu_time;
     cout<<"\ntempo lu: "<<lu_time;          
      /*TEST LU 
     cout << "\nL matrix:\n";
