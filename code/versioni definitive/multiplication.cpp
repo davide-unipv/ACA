@@ -53,7 +53,7 @@ double execution (float **a, float **b, float **r, int size, int threads){
     double time;
 	//set the result matrix to 0 with a fixed number of thread
 	omp_set_num_threads(8);
-	#pragma omp parallel for
+	#pragma omp parallel for collapse(2)
     for(int i = 0; i < size; i++)
         for(int j = 0; j < size; j++)
             r[i][j] = 0;
