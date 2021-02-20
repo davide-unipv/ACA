@@ -10,7 +10,7 @@ using namespace std;
 #define MAXNUMBER 100
 #define MINNUMBER 0
  
-void showMatrix(float **matrix, int size){
+void showMatrix(float **matrix, int size){ //display the matrix on the terminal
     cout << "\n";
     for(int i=0; i <size;i++ ){
         for(int j=0; j< size; j++){
@@ -21,7 +21,7 @@ void showMatrix(float **matrix, int size){
     }
 }
 
-void create_Matrix (float **random, int size){
+void create_Matrix (float **random, int size){ //create a random matrix between MAXNUMBER and MINNUMBER
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
     srand(time(NULL));
@@ -30,7 +30,7 @@ void create_Matrix (float **random, int size){
             random[i][j] = rand() %(range);
 }
 
-void lu(float **a, float **l, float **u, int size){
+void lu(float **a, float **l, float **u, int size){ //LU decomposition
     for (int k = 0; k < size; k++){
         for (int i = k+1; i < size; i++){
             l[i][k] = u[i][k] / u[k][k];
@@ -41,7 +41,7 @@ void lu(float **a, float **l, float **u, int size){
     }
 }
 
-void pivoting(float **a, float **p, int size){
+void pivoting(float **a, float **p, int size){ //The pivoting is always executed in order to maintain the error low
     bool flag=false; 
 	for (int k = 0; k < size-1; k++){   //k=colonna
     	int imax = k;
@@ -60,7 +60,7 @@ void pivoting(float **a, float **p, int size){
 	}
 }
 
-void forwardSubst(float **l, float **p,int column, float *y, int size){
+void forwardSubst(float **l, float **p,int column, float *y, int size){ 
 	double sum=0;
     for(int i = 0; i< size; i++){
         for (int j = 0; j < i; j++){
@@ -84,7 +84,7 @@ void backwardSubst(float **u, float *y, float **a1, int column, int size){
     }
 }
 
-void findInverse(float **a, float **a1, float **l, float **u, float **p, int size){
+void findInverse(float **a, float **a1, float **l, float **u, float **p, int size){ //build the inverse matrix column after column
     #pragma omp parallel for  //i can do each column indipendentily
     for(int i=0; i< size; i++){
         float* y = new float[size](); 
@@ -93,7 +93,7 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p, int siz
     }
 }
 
-void multiply(float **a, float **b, float **r, int size){ //per testare l'inversa
+void multiply(float **a, float **b, float **r, int size){ //to test the inverse (A*A^(-1)=I and the LU decomposition L*U=A)
     #pragma omp parallel for 
         for(int i = 0; i < size; i++)
             for(int j = 0; j < size; j++)
@@ -101,7 +101,7 @@ void multiply(float **a, float **b, float **r, int size){ //per testare l'invers
                     r[i][j] = r[i][j] + a[i][k]*b[k][j];
 }
 
-int conta_zeri(float **matrix, int size){ //conta il numero di zeri nella matrice
+int conta_zeri(float **matrix, int size){ //count the total number of zeros in a matrix
 	int n=0;
 	for(int i=0; i <size;i++ ){
         for(int j=0; j< size; j++){
@@ -112,7 +112,8 @@ int conta_zeri(float **matrix, int size){ //conta il numero di zeri nella matric
 }
 
 double execution (float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p, int size, int threadcount){
-	omp_set_num_threads(8);
+	omp_set_num_threads(8); //8 thread to speedup the setup
+	/*Build the pivoting matrix and set to 0 R and A^(-1)*/
 	#pragma omp parallel for
     for(int i = 0; i < size; i++) {
         p[i][i] = 1;
@@ -126,7 +127,8 @@ double execution (float **a, float **l, float **u, float **p, float **r, float *
     }
     omp_set_num_threads(threadcount);
     
-	double time_exec= omp_get_wtime();
+	double time_exec= omp_get_wtime(); //Start time measurament
+	/*Build matrix L and copy A in A_P*/
 	#pragma omp parallel for   
     for (int i = 0; i < size; i++) {
         l[i][i] = 1;
@@ -136,24 +138,26 @@ double execution (float **a, float **l, float **u, float **p, float **r, float *
                 l[i][j] = 0;
         }
     }
+    
     //double pivot=omp_get_wtime();
-    pivoting(a_p,p,size);
+    pivoting(a_p,p,size); //Doing the pivoting
 	/*pivot=omp_get_wtime()-pivot;
-	cout<<"\ntempo pivoting: "<<pivot; */
-	    
+	cout<<"\ntempo pivoting: "<<pivot;
+	cout << "\nMatrix A pivottata:\n";
+    showMatrix(a_p, size);*/ 
+	   
+	/*Build matrix U starting from A_P*/
     #pragma omp parallel for
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
     
-    /*cout << "\nMatrix A pivottata:\n";
-    showMatrix(a_p, size);*/
+    //double lu_time=omp_get_wtime();
+    lu(a_p,l,u,size); //Perform LU decomposition
+	//lu_time=omp_get_wtime()-lu_time;
+    //cout<<"\ntempo lu: "<<lu_time;        
     
-    double lu_time=omp_get_wtime();
-    lu(a_p,l,u,size); 
-	lu_time=omp_get_wtime()-lu_time;
-    cout<<"\ntempo lu: "<<lu_time;        
-    /*TEST LU 
+	/*TEST LU 
     cout << "\nL matrix:\n";
     showMatrix(l, size);
     cout << "\nU matrix:\n";
@@ -161,12 +165,12 @@ double execution (float **a, float **l, float **u, float **p, float **r, float *
     cout << "\nL*U=R";
     multiply(l,u,r, size);
     showMatrix(r, size);
-	cout << "\nFinding the inverse...";
-   */
-    findInverse(a_p,a1,l,u,p,size);
+	cout << "\nFinding the inverse...";*/
+
+    findInverse(a_p,a1,l,u,p,size); //Perform findInverse
     //cout<< "\nMatrix a^-1:\n";
     //showMatrix(a1, size);
-    time_exec = omp_get_wtime()-time_exec;
+    time_exec = omp_get_wtime()-time_exec; //Stopping the time measurament
     /*cout << "\nTempo inversa: "<< inv;
     cout << "\nExecution time: "<< time << "\n\n";
     cout<<"\nmoltiplicazione a*a-1: "<<endl;
@@ -175,8 +179,9 @@ double execution (float **a, float **l, float **u, float **p, float **r, float *
     return time_exec;
 }
 void init(float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p, int size){
-	double time_setup= omp_get_wtime();
-	omp_set_num_threads(8);
+	double time_setup= omp_get_wtime(); //get the time for the setup
+	omp_set_num_threads(8); //8 thread to speedup the setup
+	
 	#pragma omp parallel for 
     for(int i = 0; i < size; i++){
         a[i] = (float *)malloc(size * sizeof(float));
@@ -192,6 +197,7 @@ void init(float **a, float **l, float **u, float **p, float **r, float **a1, flo
 	
 	time_setup = omp_get_wtime()-time_setup;
 	cout<<"\ntempo setup: "<<time_setup;
+	
 	int za=conta_zeri(a, size);
 	int ntot=size*size;
 	cout<<"\nNumero zeri di A: "<<za<<"\tNumero totale elementi di A: "<<ntot<<endl;
@@ -200,7 +206,7 @@ void init(float **a, float **l, float **u, float **p, float **r, float **a1, flo
     showMatrix(a, size);*/
 }
 
-void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p){
+void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1, float **a_p){ 
 	free(*a);
     free(*a_p);
     free(*a1);
@@ -210,12 +216,14 @@ void free_mem(float **a, float **l, float **u, float **p, float **r, float **a1,
     free(*r);
 }
 
-int main(int argc,char **argv){
+int main(){
     int dimension[] = {500, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
-	int threadcount[] = {2, 4, 8, 12, 16, 20, 24};
+	int threadcount[] = {1, 2, 4, 8, 12, 16, 20, 24};
     double avgtime, sum;
 	ofstream outfile;
 	outfile.open("Test_results_inverse.txt");
+	
+	/*The inverse is done on the same matrix with a different number of threads. Each computation is performed 4 times and then is calculated the mean value*/
 	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
 		float **a = (float **)malloc(dimension[i] * sizeof(float*));
     	float **l = (float **)malloc(dimension[i] * sizeof(float*));

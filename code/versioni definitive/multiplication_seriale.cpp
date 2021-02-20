@@ -11,7 +11,7 @@ using namespace std;
 #define MAXNUMBER 100
 #define MINNUMBER 0
 
-void showMatrix(float **matrix, int size){
+void showMatrix(float **matrix, int size){ //display the matrix on the terminal
     cout << "\n";
     for(int i=0; i <size;i++ ){
         for(int j=0; j< size; j++){
@@ -22,7 +22,7 @@ void showMatrix(float **matrix, int size){
     }
 }
 
-void create_Matrix (float **random, int size){
+void create_Matrix (float **random, int size){  //create a random matrix between MAXNUMBER and MINNUMBER
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
     for(i = 0; i <size; i++)
@@ -30,7 +30,7 @@ void create_Matrix (float **random, int size){
             random[i][j] = rand() %(range);
 }
 
-int conta_zeri(float **matrix, int size){ //conta il numero di zeri nella matrice
+int conta_zeri(float **matrix, int size){ //count the total number of zeros in a matrix
 	int n=0;
 	for(int i=0; i <size;i++ ){
         for(int j=0; j< size; j++){
@@ -40,7 +40,7 @@ int conta_zeri(float **matrix, int size){ //conta il numero di zeri nella matric
 	return n;
 }
 
-void multiply(float **a, float **b, float **r, int size){	//r=a*b
+void multiply(float **a, float **b, float **r, int size){ //perform the multiplication: r=a*b
     for(int i = 0; i < size; i++)
         for(int j = 0; j < size; j++)
             for(int k = 0; k < size; k++)
@@ -48,11 +48,12 @@ void multiply(float **a, float **b, float **r, int size){	//r=a*b
 }
 
 double execution (float **a, float **b, float **r, int size, int threads){
-   for(int i = 0; i < size; i++)
+   	double time;
+	//set the result matrix to 0
+    for(int i = 0; i < size; i++)
         for(int j = 0; j < size; j++)
             r[i][j] = 0;
     
-	double time;
     time=omp_get_wtime();
     multiply(a,b,r, size);
     time=omp_get_wtime()-time;
@@ -64,13 +65,12 @@ double execution (float **a, float **b, float **r, int size, int threads){
 void init(float **a, float **b, float **r, int size){
 	srand(time(NULL));
     int za, zb;
-    double time=0;
     for(int i = 0; i < size; i++){
         a[i] = (float *)malloc(size * sizeof(float));
         b[i] = (float *)malloc(size * sizeof(float));
         r[i] = (float *)malloc(size * sizeof(float));
     }
-    double sec=omp_get_wtime();         
+    double sec=omp_get_wtime(); //measure of the time of the matrix creation        
 	create_Matrix(a, size);
 	create_Matrix(b, size);
 	sec= omp_get_wtime()-sec;
@@ -88,13 +88,12 @@ void init(float **a, float **b, float **r, int size){
 }
 
 int main(){
-	
 	int dimension[] = {500, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
 	int threadcount[] = {1};
 	double avgtime, sum;
 	ofstream outfile;
 	outfile.open("Test_results_multiplication_seriale.txt");
-	
+	/*The multiplication is done on the same matrix. For each dimension the calculation is performed 4 times and then is calculated the mean value*/
 	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
 		float **a = (float **)malloc(dimension[i] * sizeof(float*));
     	float **b = (float **)malloc(dimension[i] * sizeof(float*));

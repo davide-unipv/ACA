@@ -11,7 +11,7 @@ using namespace std;
 #define MAXNUMBER 100
 #define MINNUMBER 0
 
-void showMatrix(float **matrix, int size){
+void showMatrix(float **matrix, int size){ //display the matrix on the terminal
     cout << "\n";
     for(int i=0; i <size;i++ ){
         for(int j=0; j< size; j++){
@@ -22,7 +22,7 @@ void showMatrix(float **matrix, int size){
     }
 }
 
-void create_Matrix (float **random, int size){
+void create_Matrix (float **random, int size){ //create a random matrix between MAXNUMBER and MINNUMBER
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
     for(i = 0; i <size; i++)
@@ -30,7 +30,7 @@ void create_Matrix (float **random, int size){
             random[i][j] = rand() %(range);
 }
 
-int conta_zeri(float **matrix, int size){
+int conta_zeri(float **matrix, int size){ //count the total number of zeros in a matrix
 	int n=0;
 	for(int i=0; i <size;i++ ){
         for(int j=0; j< size; j++){
@@ -41,7 +41,7 @@ int conta_zeri(float **matrix, int size){
 }
 
 
-void multiply(float **a, float **b, float **r, int size){ //r=a*b
+void multiply(float **a, float **b, float **r, int size){ //perform the multiplication: r=a*b
     #pragma omp parallel for
     for(int i = 0; i < size; i++)
         for(int j = 0; j < size; j++)
@@ -50,27 +50,27 @@ void multiply(float **a, float **b, float **r, int size){ //r=a*b
 }
 
 double execution (float **a, float **b, float **r, int size, int threads){
-    omp_set_num_threads(8);
-	#pragma omp parallel for collapse(2)
+    double time;
+	//set the result matrix to 0 with a fixed number of thread
+	omp_set_num_threads(8);
+	#pragma omp parallel for
     for(int i = 0; i < size; i++)
         for(int j = 0; j < size; j++)
             r[i][j] = 0;
             
-	omp_set_num_threads(threads);
-	double time;
-    time=omp_get_wtime();
+	omp_set_num_threads(threads); //set the correct number of threads
+    time=omp_get_wtime(); //start the time measurament
     multiply(a,b,r, size);
-    time=omp_get_wtime()-time;
+    time=omp_get_wtime()-time; //stop the time measurament
 	/*showMatrix(r, size);
     cout << "\nExecution time: "<< time;*/
     return time;
 }
 
 void init(float **a, float **b, float **r, int size){
-	omp_set_num_threads(8);
+	omp_set_num_threads(8); 
 	srand(time(NULL));
     int za, zb;
-    double time=0;
     #pragma omp parallel for
     for(int i = 0; i < size; i++){
         a[i] = (float *)malloc(size * sizeof(float));
@@ -98,10 +98,11 @@ void init(float **a, float **b, float **r, int size){
 int main(){
 	
 	int dimension[] = {500, 1000, 1500, 2000, 2500, 3000, 3500, 4000};
-	int threadcount[] = {2, 4, 8, 12, 16, 20, 24};
+	int threadcount[] = {1, 2, 4, 8, 12, 16, 20, 24};
 	double avgtime, sum;
 	ofstream outfile;
 	outfile.open("Test_results_multiplication.txt");
+	/*The multiplication is done on the same matrix with a different number of threads. Each computation is performed 4 times and then is calculated the mean value*/
 	for (int i = 0; i < sizeof(dimension)/sizeof(dimension[0]); i++){
 		float **a = (float **)malloc(dimension[i] * sizeof(float*));
     	float **b = (float **)malloc(dimension[i] * sizeof(float*));
